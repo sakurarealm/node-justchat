@@ -1,16 +1,29 @@
 {
-    "name": "app-template",
+    "name": "justchat-mc",
     "version": "0.0.0-development",
-    "description": "An Node.js Application.",
+    "description": "A node.js client and server lib for JustChat.",
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
     "scripts": {
         "build": "rollup -c",
         "release": "semantic-release"
     },
-    "keywords": [],
-    "author": "",
+    "keywords": [
+        "Minecraft",
+        "chatbot",
+        "JustChat",
+        "chat"
+    ],
+    "author": "ConstasJ <2020212726@qq.com>",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ConstasJ/node-justchat.git"
+    },
+    "homepage": "https://github.com/ConstasJ/node-justchat",
+    "bugs": {
+        "url": "https://github.com/ConstasJ/node-justchat/issues"
+    },
     "devDependencies": {
         "@semantic-release/changelog": "^6.0.1",
         "@semantic-release/git": "^10.0.1",
