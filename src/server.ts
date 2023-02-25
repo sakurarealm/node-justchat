@@ -1,6 +1,6 @@
 import net from 'node:net';
 import events from 'node:events';
-import { Client, ServerConfig } from './tyco';
+import { Client, ServerConfig } from './types';
 import { parseBody } from './utils';
 
 class Server extends events.EventEmitter {

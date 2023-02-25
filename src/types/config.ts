@@ -17,12 +17,7 @@ interface ServerConfig extends Config {
 interface ClientConfig extends Config {
     enable: boolean;
     address?: string;
-    port: string;
+    port: number;
 }
 
-interface Client {
-    name: string;
-    id: string;
-}
-
-export { ServerConfig, ClientConfig, Client };
+export { ServerConfig, ClientConfig };
