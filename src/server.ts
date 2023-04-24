@@ -1,7 +1,7 @@
 import net from 'node:net';
 import events from 'node:events';
 import { Client, ServerConfig } from './types';
-import { parseBody } from './utils';
+import { parseBody, Protocol } from './utils';
 
 class Server extends events.EventEmitter {
     private server: net.Server = net.createServer();
@@ -14,18 +14,13 @@ class Server extends events.EventEmitter {
             ? 1
             : this.config.maxConnections
             ? this.config.maxConnections
-            : 100;
+            : 1024;
         this.server.on('connection', (socket) => {
-            socket.on('data', (data) => {
-                const body = parseBody(data);
-                if (body.type === 1) {
-                    const cli: Client = {
-                        name: body.name,
-                        id: body.id
-                    };
-                    this.clients.push(cli);
-                } else this.emit('message', body);
+            const jPipe = new Protocol();
+            jPipe.on('message', (msg) => {
+                this.emit('message', msg);
             });
+            socket.pipe(jPipe).pipe(socket);
         });
     }
     public start() {

@@ -1,4 +1,5 @@
 import Buffer from 'node:buffer';
+import JustChatProtocol from './protocol';
 
 export * from './server';
 
@@ -11,4 +12,4 @@ function parseBody(data: Buffer.Buffer) {
     return JSON.parse(body);
 }
 
-export { parseBody };
+export { parseBody, JustChatProtocol as Protocol };
