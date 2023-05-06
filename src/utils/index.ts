@@ -14,7 +14,7 @@ function parseBody(data: Buffer.Buffer) {
     return JSON.parse(body);
 }
 
-const serverDefault: ServerConfig = {
+const serverDefault = {
     version: 2,
     name: 'JustChat Server',
     id: uuid(),

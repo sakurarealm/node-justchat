@@ -15,10 +15,25 @@ import { Protocol, serverDefault } from './utils';
 class MyServer extends net.Server {
     private clients: Client[] = [];
     private config: ServerConfig;
-    constructor(config: ServerConfig = serverDefault) {
+    private connectionNum = 0;
+    // 重写 Server 类的构造函数
+    constructor(config: ServerConfig) {
         super();
-        this.config = config;
+        this.config = Object.assign(serverDefault, config);
         this.on('connection', (socket: net.Socket) => {
+            // 检测客户端是否超时
+            this.checkClientTimeout();
+            // 检测客户端数量是否超过最大值
+            this.connections++;
+            // 检测this.config.maxConnections是否存在
+            if (
+                this.connectionNum >=
+                    (this.config.maxConnections || serverDefault.maxConnections) ||
+                (this.config.singleMode && this.connectionNum > 1)
+            ) {
+                socket.destroy();
+                return;
+            }
             const entry = new Protocol();
             const client: Client = {
                 entry,
@@ -46,13 +61,17 @@ class MyServer extends net.Server {
                 client.lastPulseTime = Date.now();
             }, 30000); // 每 30 秒发送一个心跳包
 
-            // 设置超时检测
-            setInterval(() => {
+            // 监听客户端断开连接的事件
+            socket.on('close', () => {
+                // 检测客户端是否超时
                 this.checkClientTimeout();
-            }, 5000); // 每 5 秒检测一次超时
+                // 将客户端从 clients 数组中移除
+                this.clients = this.clients.filter((c) => c !== client);
+                this.connections--;
+            });
         });
     }
-
+    // 处理包
     private handlePacket(client: Client, packet: Message) {
         // 根据 packet.type 处理不同的包
         switch (packet.type) {
@@ -60,7 +79,6 @@ class MyServer extends net.Server {
                 // 更新客户端的 lastPulseTime
                 client.lastPulseTime = Date.now();
                 break;
-
             case PacketType.REG:
                 this.handleReg(packet as RegisterMessage, client);
                 break;
@@ -81,7 +99,7 @@ class MyServer extends net.Server {
                 throw new Error('Unknown packet type');
         }
     }
-
+    // 检测客户端是否超时
     private checkClientTimeout() {
         const now = Date.now();
         const timeout = 30000; // 超时时间为 30 秒
@@ -99,12 +117,12 @@ class MyServer extends net.Server {
             return true;
         });
     }
-
+    // 处理注册包
     private handleReg(packet: RegisterMessage, client: Client) {
         client.name = packet.name;
         client.uuid = packet.id;
     }
-
+    // 处理聊天包
     private handleChat(packet: ChatMessage, client: Client) {
         const { world, world_display, sender, content } = packet;
         const decodedContent = content.map((c) => {
@@ -123,7 +141,7 @@ class MyServer extends net.Server {
         };
         this.emit('chat', chatEvent, client);
     }
-
+    // 处理广播包
     private handleBroadcast(packet: BroadcastMessage, client: Client) {
         const content = packet.content
             ? Buffer.from(packet.content, 'base64').toString('utf-8')
@@ -133,7 +151,7 @@ class MyServer extends net.Server {
             : undefined;
         this.emit('broadcast', { event: packet.event, content, sender }, client);
     }
-
+    // 处理列表包
     private handleList(packet: ListMessage, client: Client) {
         const count = packet.count;
         const max = packet.max;
@@ -151,9 +169,70 @@ class MyServer extends net.Server {
         // 触发 list 事件
         this.emit('list', { count, max, playerlist, world, world_display, sender }, client);
     }
-
+    // 寻找客户端的函数
     private findClient({ name, uuid }: SearchClient): Client | undefined {
         return this.clients.find((client) => client.name === name || client.uuid === uuid);
+    }
+
+    //可以发送ChatMessage的函数
+    private sendChatMessage(client: SearchClient, message: ChatMessage) {
+        // 检测客户端是否超时
+        this.checkClientTimeout();
+        // 根据 name 或 uuid 寻找客户端
+        const target = this.findClient(client);
+        if (target) {
+            const sendMsg = {
+                version: 4,
+                type: PacketType.CHAT,
+                // 转换需要转换为 base64 的字段
+                world_display: message.world_display
+                    ? Buffer.from(message.world_display, 'utf-8').toString('base64')
+                    : null,
+                world: message.world,
+                sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
+                content: message.content.map((c) => {
+                    const { type, content, ...otherProps } = c;
+                    return {
+                        type,
+                        content: Buffer.from(content, 'utf-8').toString('base64'),
+                        ...otherProps
+                    };
+                }),
+                from_server: Buffer.from(this.config.name || serverDefault.name, 'utf-8').toString(
+                    'base64'
+                )
+            };
+            target.entry.send(sendMsg);
+        } else {
+            console.log('找不到目标客户端');
+        }
+    }
+
+    //可以发送ListMessage的函数
+    private sendListMessage(client: SearchClient, message: ListMessage) {
+        // 检测客户端是否超时
+        this.checkClientTimeout();
+        // 根据 name 或 uuid 寻找客户端
+        const target = this.findClient(client);
+        if (target) {
+            const sendMsg = {
+                version: 4,
+                type: PacketType.LIST,
+                subtype: message.subtype,
+                count: message.count,
+                max: message.max,
+                playerlist: message.playerlist.map((player: string) =>
+                    Buffer.from(player, 'utf-8').toString('base64')
+                ),
+                world: message.world,
+                //该字段需要转换为base64
+                world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
+                sender: Buffer.from(message.sender, 'utf-8').toString('base64')
+            };
+            target.entry.send(sendMsg);
+        } else {
+            console.log('找不到目标客户端');
+        }
     }
 }
 

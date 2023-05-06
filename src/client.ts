@@ -1,28 +1,118 @@
 import net from 'node:net';
-import { BroadcastMessage, ChatMessage, ClientConfig, ListMessage, RegisterMessage } from './types';
-import events from 'node:events';
+import {
+    BroadcastMessage,
+    ChatMessage,
+    ClientConfig,
+    ListMessage,
+    PacketType,
+    RegisterMessage
+} from './types';
+import { Protocol } from './utils';
 type Message = RegisterMessage | BroadcastMessage | ChatMessage | ListMessage;
-class Client extends events.EventEmitter {
-    private socket: net.Socket;
-    private config: ClientConfig;
 
-    public constructor(config: ClientConfig = { enable: true, port: 39980 }) {
+class Client extends net.Socket {
+    private config: ClientConfig;
+    private entry: Protocol;
+    constructor(config: ClientConfig) {
         super();
         this.config = config;
-        const address = config.address ? config.address : 'localhost';
-        this.socket = net.createConnection(address).connect(config.port);
-        this.socket.on('data', (data) => this.emit('message', JSON.parse(data.toString())));
-        setInterval(() => {
-            const heartbeat = {
-                version: 4,
-                type: 0
-            };
-            this.socket.write(JSON.stringify(heartbeat));
-        }, 5000);
+        this.entry = new Protocol();
+        this.pipe(this.entry).pipe(this);
+        this.entry.on('packet', (packet: Message) => {
+            this.handlePacket(packet);
+        });
     }
-    public connect = () => this.socket.connect(this.config.port);
-    public send(message: Message) {
-        this.socket.write(JSON.stringify(message));
+
+    private start() {
+        this.connect(this.config.port, this.config.address);
+        this.on('connect', () => {
+            const regPacket = {
+                type: PacketType.REG,
+                version: 1,
+                identity: '1',
+                name: this.config.name,
+                id: this.config.id
+            };
+            this.entry.send(regPacket);
+        });
+    }
+
+    // 处理包
+    private handlePacket(packet: Message) {
+        // 根据 packet.type 处理不同的包
+        switch (packet.type) {
+            case PacketType.PULSE:
+                // 向服务器发送心跳包
+                this.entry.send({
+                    type: PacketType.PULSE,
+                    version: 4
+                });
+                break;
+            case PacketType.REG:
+                console.log('客户端不应该收到 REG 包');
+                break;
+            case PacketType.CHAT:
+                this.handleChat(packet as ChatMessage);
+                break;
+
+            case PacketType.BROADCAST:
+                this.handleBroadcast(packet as BroadcastMessage);
+                break;
+
+            case PacketType.LIST:
+                this.handleList(packet as ListMessage);
+                break;
+
+            default:
+                throw new Error('Unknown packet type');
+        }
+    }
+    // 处理聊天包
+    private handleChat(packet: ChatMessage) {
+        const { world, world_display, sender, content } = packet;
+        const decodedContent = content.map((c) => {
+            const { type, content, ...otherProps } = c;
+            return {
+                type,
+                content: Buffer.from(content, 'base64').toString('utf-8'),
+                ...otherProps
+            };
+        });
+        const chatEvent = {
+            world,
+            world_display: Buffer.from(world_display, 'base64').toString('utf-8'),
+            sender: Buffer.from(sender, 'base64').toString('utf-8'),
+            content: decodedContent
+        };
+        this.emit('chat', chatEvent);
+    }
+    // 处理广播包
+    private handleBroadcast(packet: BroadcastMessage) {
+        const content = packet.content
+            ? Buffer.from(packet.content, 'base64').toString('utf-8')
+            : undefined;
+        const sender = packet.sender
+            ? Buffer.from(packet.sender, 'base64').toString('utf-8')
+            : undefined;
+        this.emit('broadcast', { event: packet.event, content, sender });
+    }
+    // 处理列表包
+    private handleList(packet: ListMessage) {
+        const count = packet.count;
+        const max = packet.max;
+        const playerlist = packet.playerlist.map((player: string) =>
+            Buffer.from(player, 'base64').toString('utf-8')
+        );
+        const world = packet.world;
+        const world_display = packet.world_display
+            ? Buffer.from(packet.world_display, 'base64').toString('utf-8')
+            : null;
+        const sender = packet.sender
+            ? Buffer.from(packet.sender, 'base64').toString('utf-8')
+            : null;
+
+        // 触发 list 事件
+        this.emit('list', { count, max, playerlist, world, world_display, sender });
     }
 }
 

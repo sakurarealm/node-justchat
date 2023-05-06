@@ -16,7 +16,7 @@ interface ServerConfig extends Config {
 
 interface ClientConfig extends Config {
     enable: boolean;
-    address?: string;
+    address: string;
     port: number;
 }
 
