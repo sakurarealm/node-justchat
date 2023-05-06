@@ -1,8 +1,5 @@
 import { Duplex } from 'stream';
-
-interface JustChatPacket {
-    body: string;
-}
+import { Message } from '../types';
 
 class JustChatProtocol extends Duplex {
     private _buffer: Buffer; // 缓存区
@@ -57,8 +54,8 @@ class JustChatProtocol extends Duplex {
         }
     }
 
-    send(packet: JustChatPacket) {
-        const body = Buffer.from(JSON.stringify(packet.body), 'ascii');
+    send(packet: Message) {
+        const body = Buffer.from(JSON.stringify(packet), 'ascii');
         const bodyLength = Buffer.alloc(4);
         bodyLength.writeInt32BE(body.length);
 

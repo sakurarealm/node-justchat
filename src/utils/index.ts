@@ -1,5 +1,7 @@
 import Buffer from 'node:buffer';
 import JustChatProtocol from './protocol';
+import { ServerConfig } from '../types';
+import { v4 as uuid } from 'uuid';
 
 export * from './server';
 
@@ -12,4 +14,14 @@ function parseBody(data: Buffer.Buffer) {
     return JSON.parse(body);
 }
 
-export { parseBody, JustChatProtocol as Protocol };
+const serverDefault: ServerConfig = {
+    version: 2,
+    name: 'JustChat Server',
+    id: uuid(),
+    enable: true,
+    port: 35580,
+    singleMode: false,
+    maxConnections: 128
+};
+
+export { parseBody, JustChatProtocol as Protocol, serverDefault };

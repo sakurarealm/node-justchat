@@ -1,9 +1,15 @@
 import { CQMessage } from './cq';
 
-type types = 0 | 1 | 100 | 101 | 200;
+export enum PacketType {
+    PULSE = 0,
+    REG = 1,
+    CHAT = 100,
+    BROADCAST = 101,
+    LIST = 200
+}
 interface Message {
     version: number;
-    type: types;
+    type: PacketType;
 }
 
 interface RegisterMessage extends Message {
@@ -41,4 +47,4 @@ interface ListMessage extends Message {
     sender: string;
 }
 
-export { RegisterMessage, BroadcastMessage, ChatMessage, ListMessage };
+export { Message, RegisterMessage, BroadcastMessage, ChatMessage, ListMessage };
