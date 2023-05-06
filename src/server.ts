@@ -175,63 +175,116 @@ class MyServer extends net.Server {
     }
 
     //可以发送ChatMessage的函数
-    private sendChatMessage(client: SearchClient, message: ChatMessage) {
+    private sendChatMessage(message: ChatMessage, client?: SearchClient) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 根据 name 或 uuid 寻找客户端
-        const target = this.findClient(client);
-        if (target) {
-            const sendMsg = {
-                version: 4,
-                type: PacketType.CHAT,
-                // 转换需要转换为 base64 的字段
-                world_display: message.world_display
-                    ? Buffer.from(message.world_display, 'utf-8').toString('base64')
-                    : null,
-                world: message.world,
-                sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
-                content: message.content.map((c) => {
-                    const { type, content, ...otherProps } = c;
-                    return {
-                        type,
-                        content: Buffer.from(content, 'utf-8').toString('base64'),
-                        ...otherProps
-                    };
-                }),
-                from_server: Buffer.from(this.config.name || serverDefault.name, 'utf-8').toString(
-                    'base64'
-                )
-            };
-            target.entry.send(sendMsg);
+        if (client) {
+            const target = this.findClient(client);
+            if (target) {
+                const sendMsg = {
+                    version: 4,
+                    type: PacketType.CHAT,
+                    // 转换需要转换为 base64 的字段
+                    world_display: message.world_display
+                        ? Buffer.from(message.world_display, 'utf-8').toString('base64')
+                        : null,
+                    world: message.world,
+                    sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
+                    content: message.content.map((c) => {
+                        const { type, content, ...otherProps } = c;
+                        return {
+                            type,
+                            content: Buffer.from(content, 'utf-8').toString('base64'),
+                            ...otherProps
+                        };
+                    }),
+                    from_server: Buffer.from(
+                        this.config.name || serverDefault.name,
+                        'utf-8'
+                    ).toString('base64')
+                };
+                target.entry.send(sendMsg);
+            } else {
+                console.log('找不到目标客户端');
+            }
+        } else if (this.config.singleMode) {
+            this.clients.forEach((target) => {
+                const sendMsg = {
+                    version: 4,
+                    type: PacketType.CHAT,
+                    // 转换需要转换为 base64 的字段
+                    world_display: message.world_display
+                        ? Buffer.from(message.world_display, 'utf-8').toString('base64')
+                        : null,
+                    world: message.world,
+                    sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
+                    content: message.content.map((c) => {
+                        const { type, content, ...otherProps } = c;
+                        return {
+                            type,
+                            content: Buffer.from(content, 'utf-8').toString('base64'),
+                            ...otherProps
+                        };
+                    }),
+                    from_server: Buffer.from(
+                        this.config.name || serverDefault.name,
+                        'utf-8'
+                    ).toString('base64')
+                };
+                target.entry.send(sendMsg);
+            });
         } else {
-            console.log('找不到目标客户端');
+            throw new Error('未指定目标客户端');
         }
     }
 
     //可以发送ListMessage的函数
-    private sendListMessage(client: SearchClient, message: ListMessage) {
+    private sendListMessage(message: ListMessage, client?: SearchClient) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 根据 name 或 uuid 寻找客户端
-        const target = this.findClient(client);
-        if (target) {
-            const sendMsg = {
-                version: 4,
-                type: PacketType.LIST,
-                subtype: message.subtype,
-                count: message.count,
-                max: message.max,
-                playerlist: message.playerlist.map((player: string) =>
-                    Buffer.from(player, 'utf-8').toString('base64')
-                ),
-                world: message.world,
-                //该字段需要转换为base64
-                world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
-                sender: Buffer.from(message.sender, 'utf-8').toString('base64')
-            };
-            target.entry.send(sendMsg);
+        if (client) {
+            const target = this.findClient(client);
+            if (target) {
+                const sendMsg = {
+                    version: 4,
+                    type: PacketType.LIST,
+                    subtype: message.subtype,
+                    count: message.count,
+                    max: message.max,
+                    playerlist: message.playerlist.map((player: string) =>
+                        Buffer.from(player, 'utf-8').toString('base64')
+                    ),
+                    world: message.world,
+                    //该字段需要转换为base64
+                    world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
+                    sender: Buffer.from(message.sender, 'utf-8').toString('base64')
+                };
+                target.entry.send(sendMsg);
+            } else {
+                console.log('找不到目标客户端');
+            }
+        } else if (this.config.singleMode) {
+            this.clients.forEach((target) => {
+                const sendMsg = {
+                    version: 4,
+                    type: PacketType.LIST,
+                    subtype: message.subtype,
+                    count: message.count,
+                    max: message.max,
+                    playerlist: message.playerlist.map((player: string) =>
+                        Buffer.from(player, 'utf-8').toString('base64')
+                    ),
+                    world: message.world,
+                    //该字段需要转换为base64
+                    world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
+                    sender: Buffer.from(message.sender, 'utf-8').toString('base64')
+                };
+                target.entry.send(sendMsg);
+            });
         } else {
-            console.log('找不到目标客户端');
+            throw new Error('未指定目标客户端');
         }
     }
 }
