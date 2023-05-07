@@ -1,0 +1,16 @@
+{
+  "name": "justchat-workspace",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Workspace for node-justchat",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CJGroup/node-justchat.git"
+  },
+  "author": "ConstasJ <constasj@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CJGroup/node-justchat/issues"
+  },
+  "homepage": "https://github.com/CJGroup/node-justchat#readme"
+}
