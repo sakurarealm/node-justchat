@@ -15,60 +15,59 @@ import { Protocol, serverDefault } from './utils';
 class MyServer extends net.Server {
     private clients: Client[] = [];
     private config: ServerConfig;
-    private connectionNum = 0;
     // 重写 Server 类的构造函数
-    constructor(config: ServerConfig) {
+    constructor(config: ServerConfig = serverDefault) {
         super();
         this.config = Object.assign(serverDefault, config);
-        this.on('connection', (socket: net.Socket) => {
+        this.on('connection', this.handleConnection);
+    }
+
+    private handleConnection(socket: net.Socket) {
+        // 检测客户端是否超时
+        this.checkClientTimeout();
+        // 检测客户端数量是否超过最大值
+        if (
+            this.connections >= (this.config.maxConnections || serverDefault.maxConnections) ||
+            (this.config.singleMode && this.connections >= 1)
+        ) {
+            socket.destroy();
+            return;
+        }
+        this.connections++;
+        const entry = new Protocol();
+        const client: Client = {
+            entry,
+            socket,
+            lastPulseTime: Date.now() // 初始化 lastPulseTime
+        };
+
+        // 将客户端添加到 clients 数组中
+        this.clients.push(client);
+
+        // 监听收到数据的事件
+        entry.on('packet', (packet: Message) => {
+            this.handlePacket(client, packet);
+        });
+
+        // 发送心跳包
+        setInterval(() => {
+            const pulsePacket = {
+                type: PacketType.PULSE,
+                version: 1
+            };
+            entry.send(pulsePacket);
+
+            // 更新客户端的 lastPulseTime
+            client.lastPulseTime = Date.now();
+        }, 30000); // 每 30 秒发送一个心跳包
+
+        // 监听客户端断开连接的事件
+        socket.on('close', () => {
             // 检测客户端是否超时
             this.checkClientTimeout();
-            // 检测客户端数量是否超过最大值
-            this.connections++;
-            // 检测this.config.maxConnections是否存在
-            if (
-                this.connectionNum >=
-                    (this.config.maxConnections || serverDefault.maxConnections) ||
-                (this.config.singleMode && this.connectionNum > 1)
-            ) {
-                socket.destroy();
-                return;
-            }
-            const entry = new Protocol();
-            const client: Client = {
-                entry,
-                socket,
-                lastPulseTime: Date.now() // 初始化 lastPulseTime
-            };
-
-            // 将客户端添加到 clients 数组中
-            this.clients.push(client);
-
-            // 监听收到数据的事件
-            entry.on('packet', (packet: Message) => {
-                this.handlePacket(client, packet);
-            });
-
-            // 发送心跳包
-            setInterval(() => {
-                const pulsePacket = {
-                    type: PacketType.PULSE,
-                    version: 1
-                };
-                entry.send(pulsePacket);
-
-                // 更新客户端的 lastPulseTime
-                client.lastPulseTime = Date.now();
-            }, 30000); // 每 30 秒发送一个心跳包
-
-            // 监听客户端断开连接的事件
-            socket.on('close', () => {
-                // 检测客户端是否超时
-                this.checkClientTimeout();
-                // 将客户端从 clients 数组中移除
-                this.clients = this.clients.filter((c) => c !== client);
-                this.connections--;
-            });
+            // 将客户端从 clients 数组中移除
+            this.clients = this.clients.filter((c) => c !== client);
+            this.connections--;
         });
     }
     // 处理包
@@ -175,7 +174,7 @@ class MyServer extends net.Server {
     }
 
     //可以发送ChatMessage的函数
-    private sendChatMessage(message: ChatMessage, client?: SearchClient) {
+    public sendChatMessage(message: ChatMessage, client?: SearchClient) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 根据 name 或 uuid 寻找客户端
@@ -186,9 +185,7 @@ class MyServer extends net.Server {
                     version: 4,
                     type: PacketType.CHAT,
                     // 转换需要转换为 base64 的字段
-                    world_display: message.world_display
-                        ? Buffer.from(message.world_display, 'utf-8').toString('base64')
-                        : null,
+                    world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
                     world: message.world,
                     sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
                     content: message.content.map((c) => {
@@ -206,7 +203,7 @@ class MyServer extends net.Server {
                 };
                 target.entry.send(sendMsg);
             } else {
-                console.log('找不到目标客户端');
+                throw new Error('找不到目标客户端');
             }
         } else if (this.config.singleMode) {
             this.clients.forEach((target) => {
@@ -214,9 +211,7 @@ class MyServer extends net.Server {
                     version: 4,
                     type: PacketType.CHAT,
                     // 转换需要转换为 base64 的字段
-                    world_display: message.world_display
-                        ? Buffer.from(message.world_display, 'utf-8').toString('base64')
-                        : null,
+                    world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
                     world: message.world,
                     sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
                     content: message.content.map((c) => {
@@ -240,7 +235,7 @@ class MyServer extends net.Server {
     }
 
     //可以发送ListMessage的函数
-    private sendListMessage(message: ListMessage, client?: SearchClient) {
+    public sendListMessage(message: ListMessage, client?: SearchClient) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 根据 name 或 uuid 寻找客户端
@@ -250,12 +245,7 @@ class MyServer extends net.Server {
                 const sendMsg = {
                     version: 4,
                     type: PacketType.LIST,
-                    subtype: message.subtype,
-                    count: message.count,
-                    max: message.max,
-                    playerlist: message.playerlist.map((player: string) =>
-                        Buffer.from(player, 'utf-8').toString('base64')
-                    ),
+                    subtype: 0,
                     world: message.world,
                     //该字段需要转换为base64
                     world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
@@ -263,7 +253,7 @@ class MyServer extends net.Server {
                 };
                 target.entry.send(sendMsg);
             } else {
-                console.log('找不到目标客户端');
+                throw new Error('找不到目标客户端');
             }
         } else if (this.config.singleMode) {
             this.clients.forEach((target) => {
@@ -271,11 +261,6 @@ class MyServer extends net.Server {
                     version: 4,
                     type: PacketType.LIST,
                     subtype: message.subtype,
-                    count: message.count,
-                    max: message.max,
-                    playerlist: message.playerlist.map((player: string) =>
-                        Buffer.from(player, 'utf-8').toString('base64')
-                    ),
                     world: message.world,
                     //该字段需要转换为base64
                     world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),

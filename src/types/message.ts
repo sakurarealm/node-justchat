@@ -7,18 +7,18 @@ export enum PacketType {
     BROADCAST = 101,
     LIST = 200
 }
-interface Message {
+interface MessageBase {
     version: number;
     type: PacketType;
 }
 
-interface RegisterMessage extends Message {
+interface RegisterMessage extends MessageBase {
     identity: 0 | 1;
     id: string;
     name: string;
 }
 
-interface BroadcastMessage extends Message {
+interface BroadcastMessage extends MessageBase {
     event?: 1 | 2 | 3;
     content?: string;
     sender?: string;
@@ -29,7 +29,7 @@ interface ChatMessageContent extends CQMessage {
     type: 'text' | 'cqcode';
     content: string;
 }
-interface ChatMessage extends Message {
+interface ChatMessage extends MessageBase {
     world: string;
     world_display: string;
     sender: string;
@@ -37,7 +37,7 @@ interface ChatMessage extends Message {
     from_server?: string;
 }
 
-interface ListMessage extends Message {
+interface ListMessage extends MessageBase {
     subtype: 0 | 1;
     count: number;
     max: number;
@@ -46,5 +46,7 @@ interface ListMessage extends Message {
     world_display: string;
     sender: string;
 }
+
+type Message = RegisterMessage | BroadcastMessage | ChatMessage | ListMessage;
 
 export { Message, RegisterMessage, BroadcastMessage, ChatMessage, ListMessage };

@@ -5,10 +5,9 @@ import {
     ClientConfig,
     ListMessage,
     PacketType,
-    RegisterMessage
+    Message
 } from './types';
 import { Protocol } from './utils';
-type Message = RegisterMessage | BroadcastMessage | ChatMessage | ListMessage;
 
 class Client extends net.Socket {
     private config: ClientConfig;
@@ -18,13 +17,8 @@ class Client extends net.Socket {
         this.config = config;
         this.entry = new Protocol();
         this.pipe(this.entry).pipe(this);
-        this.entry.on('packet', (packet: Message) => {
-            this.handlePacket(packet);
-        });
-    }
-
-    private start() {
-        this.connect(this.config.port, this.config.address);
+        this.entry.on('packet', (packet: Message) => this.handlePacket(packet));
+        // 监听 connect 事件
         this.on('connect', () => {
             const regPacket = {
                 type: PacketType.REG,
@@ -35,6 +29,10 @@ class Client extends net.Socket {
             };
             this.entry.send(regPacket);
         });
+    }
+
+    public start() {
+        this.connect(this.config.port, this.config.address);
     }
 
     // 处理包
@@ -113,6 +111,37 @@ class Client extends net.Socket {
 
         // 触发 list 事件
         this.emit('list', { count, max, playerlist, world, world_display, sender });
+    }
+    // 发送聊天包
+    public sendChat(message: ChatMessage) {
+        this.entry.send({
+            version: 4,
+            type: PacketType.CHAT,
+            // 转换需要转换为 base64 的字段
+            world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
+            world: message.world,
+            sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
+            content: message.content.map((c) => {
+                const { type, content, ...otherProps } = c;
+                return {
+                    type,
+                    content: Buffer.from(content, 'utf-8').toString('base64'),
+                    ...otherProps
+                };
+            })
+        });
+    }
+    // 发送广播包
+    public sendList(message: ListMessage) {
+        this.entry.send({
+            version: 4,
+            type: PacketType.LIST,
+            subtype: message.subtype,
+            world: message.world,
+            //该字段需要转换为base64
+            world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
+            sender: Buffer.from(message.sender, 'utf-8').toString('base64')
+        });
     }
 }
 
