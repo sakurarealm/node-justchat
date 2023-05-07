@@ -1,4 +1,4 @@
-import { Duplex } from 'stream';
+import { Duplex } from 'node:stream';
 import { Message } from '../types';
 
 class JustChatProtocol extends Duplex {

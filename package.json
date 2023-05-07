@@ -1,47 +1,50 @@
 {
-    "name": "justchat-mc",
-    "version": "0.0.0-development",
-    "description": "A node.js client and server lib for JustChat.",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
-    "scripts": {
-        "build": "rollup -c",
-        "release": "semantic-release"
-    },
-    "keywords": [
-        "Minecraft",
-        "chatbot",
-        "JustChat",
-        "chat"
-    ],
-    "author": "ConstasJ <2020212726@qq.com>",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ConstasJ/node-justchat.git"
-    },
-    "homepage": "https://github.com/ConstasJ/node-justchat",
-    "bugs": {
-        "url": "https://github.com/ConstasJ/node-justchat/issues"
-    },
-    "devDependencies": {
-        "@semantic-release/changelog": "^6.0.3",
-        "@semantic-release/git": "^10.0.1",
-        "@types/node": "^18.15.13",
-        "@types/uuid": "^9.0.1",
-        "@typescript-eslint/eslint-plugin": "^5.59.0",
-        "@typescript-eslint/parser": "^5.59.0",
-        "eslint": "^8.39.0",
-        "eslint-config-prettier": "^8.8.0",
-        "eslint-plugin-prettier": "^4.2.1",
-        "prettier": "^2.8.7",
-        "rollup": "^3.20.7",
-        "rollup-plugin-ts": "^3.2.0",
-        "semantic-release": "^21.0.1",
-        "ts-node": "^10.9.1",
-        "typescript": "^5.0.4"
-    },
-    "dependencies": {
-        "uuid": "^9.0.0"
-    }
+  "name": "justchat-mc",
+  "version": "0.0.0-development",
+  "description": "A node.js client and server lib for JustChat.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "release": "semantic-release",
+    "test": "jest"
+  },
+  "keywords": [
+    "Minecraft",
+    "chatbot",
+    "JustChat",
+    "chat"
+  ],
+  "author": "ConstasJ <2020212726@qq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ConstasJ/node-justchat.git"
+  },
+  "homepage": "https://github.com/ConstasJ/node-justchat",
+  "bugs": {
+    "url": "https://github.com/ConstasJ/node-justchat/issues"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@types/node": "^18.15.13",
+    "@types/uuid": "^9.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "jest": "^29.5.0",
+    "prettier": "^2.8.7",
+    "rollup": "^3.20.7",
+    "rollup-plugin-ts": "^3.2.0",
+    "semantic-release": "^21.0.1",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0"
+  }
 }
