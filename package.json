@@ -26,6 +26,7 @@
     "url": "https://github.com/ConstasJ/node-justchat/issues"
   },
   "devDependencies": {
+    "@jest/globals": "^29.5.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@types/node": "^18.15.13",
