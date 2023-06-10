@@ -8,16 +8,16 @@ interface Config {
 }
 
 interface ServerConfig extends Config {
-    enable: boolean;
     port: number;
+    enable?: boolean;
     singleMode?: boolean;
     maxConnections?: number;
 }
 
 interface ClientConfig extends Config {
-    enable: boolean;
     address: string;
     port: number;
+    enable?: boolean;
 }
 
 export { ServerConfig, ClientConfig };

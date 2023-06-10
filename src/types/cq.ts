@@ -1,4 +1,4 @@
 export interface CQMessage {
-    function: string;
+    function?: string;
     [key: string]: unknown;
 }
