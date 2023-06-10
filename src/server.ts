@@ -22,6 +22,10 @@ class MyServer extends net.Server {
         this.on('connection', this.handleConnection);
     }
 
+    public start() {
+        this.listen(this.config.port);
+    }
+
     private handleConnection(socket: net.Socket) {
         // 检测客户端是否超时
         this.checkClientTimeout();
