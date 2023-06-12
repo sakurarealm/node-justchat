@@ -7,6 +7,7 @@ const serverDefault = {
     id: uuid(),
     enable: true,
     host: '0.0.0.0',
+    enableTimeout: true,
     port: 35580,
     singleMode: false,
     maxConnections: 128

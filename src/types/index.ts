@@ -12,7 +12,7 @@ export interface Client {
     lastPulseTime: number;
 }
 
-export interface SearchClient {
+export interface SimpleClient {
     name?: string;
     uuid?: string;
 }

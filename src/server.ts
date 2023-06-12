@@ -8,7 +8,7 @@ import {
     ListMessage,
     RegisterMessage,
     ServerConfig,
-    SearchClient
+    SimpleClient
 } from './types';
 import { Protocol, serverDefault } from './utils';
 
@@ -26,7 +26,6 @@ class MyServer extends net.Server {
         return new Promise<void>((resolve, reject) => {
             try {
                 this.listen(this.config.port, () => {
-                    console.log('服务器开始监听');
                     resolve();
                 });
             } catch (e) {
@@ -59,7 +58,7 @@ class MyServer extends net.Server {
         this.clients.push(client);
 
         // 监听收到数据的事件
-        entry.on('packet', (packet: Message) => {
+        entry.on('message', (packet: Message) => {
             this.handlePacket(client, packet);
         });
 
@@ -70,9 +69,6 @@ class MyServer extends net.Server {
                 version: 1
             };
             entry.send(pulsePacket);
-
-            // 更新客户端的 lastPulseTime
-            client.lastPulseTime = Date.now();
         }, 30000); // 每 30 秒发送一个心跳包
 
         // 监听客户端断开连接的事件
@@ -114,6 +110,7 @@ class MyServer extends net.Server {
     }
     // 检测客户端是否超时
     private checkClientTimeout() {
+        if (!this.config.enableTimeout) return;
         const now = Date.now();
         const timeout = 30000; // 超时时间为 30 秒
 
@@ -152,7 +149,7 @@ class MyServer extends net.Server {
             sender: Buffer.from(sender, 'base64').toString('utf-8'),
             content: decodedContent
         };
-        this.emit('chat', chatEvent, client);
+        this.emit('chat', chatEvent, { name: client.name, uuid: client.uuid });
     }
     // 处理广播包
     private handleBroadcast(packet: BroadcastMessage, client: Client) {
@@ -162,7 +159,11 @@ class MyServer extends net.Server {
         const sender = packet.sender
             ? Buffer.from(packet.sender, 'base64').toString('utf-8')
             : undefined;
-        this.emit('broadcast', { event: packet.event, content, sender }, client);
+        this.emit(
+            'broadcast',
+            { event: packet.event, content, sender },
+            { name: client.name, uuid: client.uuid }
+        );
     }
     // 处理列表包
     private handleList(packet: ListMessage, client: Client) {
@@ -180,15 +181,19 @@ class MyServer extends net.Server {
             : null;
 
         // 触发 list 事件
-        this.emit('list', { count, max, playerlist, world, world_display, sender }, client);
+        this.emit(
+            'list',
+            { count, max, playerlist, world, world_display, sender },
+            { name: client.name, uuid: client.uuid }
+        );
     }
     // 寻找客户端的函数
-    private findClient({ name, uuid }: SearchClient): Client | undefined {
+    private findClient({ name, uuid }: SimpleClient): Client | undefined {
         return this.clients.find((client) => client.name === name || client.uuid === uuid);
     }
 
     //可以发送ChatMessage的函数
-    public sendChatMessage(message: ChatMessage, client?: SearchClient) {
+    public sendChatMessage(message: ChatMessage, client?: SimpleClient) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 根据 name 或 uuid 寻找客户端
@@ -249,7 +254,7 @@ class MyServer extends net.Server {
     }
 
     //可以发送ListMessage的函数
-    public sendListMessage(message: ListMessage, client?: SearchClient) {
+    public sendListMessage(message: ListMessage, client?: SimpleClient) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 根据 name 或 uuid 寻找客户端

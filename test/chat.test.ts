@@ -1,8 +1,8 @@
 import { JustChatClient, JustChatServer } from '../src';
-import { describe, expect, test } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import { ChatMessage, PacketType } from '../src/types';
 
-describe('JustChat', async () => {
+describe('JustChat', () => {
     const client = new JustChatClient({
         address: 'localhost',
         port: 38080,
@@ -27,8 +27,17 @@ describe('JustChat', async () => {
             }
         ]
     };
-    server.start();
-    client.start();
+    beforeAll(async () => {
+        await server.start();
+        await client.start();
+    });
+    beforeEach(async () => {
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 5000);
+        });
+    }, 5500);
     test('It Should correctly send Chat Messages C2S', (done) => {
         client.sendChat(msg);
         server.on('chat', (rmsg, client) => {
@@ -37,7 +46,7 @@ describe('JustChat', async () => {
             expect(client.uuid).toBe('123');
             done();
         });
-    }, 1000000);
+    }, 30000);
     test('It Should correctly send Chat Messages S2C', (done) => {
         server.sendChatMessage(msg, {
             name: 'Jest Client',
@@ -48,5 +57,14 @@ describe('JustChat', async () => {
             expect(rmsg.from_server).toBe('Jest Server');
             done();
         });
-    }, 1000000);
+    }, 30000);
+    afterAll(async () => {
+        client.destroy();
+        server.close();
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 2000);
+        });
+    });
 });

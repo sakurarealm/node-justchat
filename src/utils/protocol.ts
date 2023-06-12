@@ -32,24 +32,24 @@ class JustChatProtocol extends Duplex {
                 break;
             }
 
-            const header = this._buffer.slice(0, 3);
+            const header = this._buffer.subarray(0, 3);
             if (!header.equals(Buffer.from([0x11, 0x45, 0x14]))) {
                 // 协议头不正确
                 this.emit('error', new Error('Invalid header'));
                 return;
             }
 
-            const bodyLength = this._buffer.readInt32BE(4);
+            const bodyLength = this._buffer.readInt32BE(3);
             if (this._buffer.length < bodyLength + 7) {
                 // 数据包不完整
                 break;
             }
 
-            const body = this._buffer.slice(7, bodyLength + 7).toString('ascii');
+            const body = this._buffer.subarray(7, bodyLength + 7).toString('ascii');
             // 发送message事件，传递解析后的JSON对象
             this.emit('message', JSON.parse(body));
             // 更新缓存区
-            this._buffer = this._buffer.slice(bodyLength + 7);
+            this._buffer = this._buffer.subarray(bodyLength + 7);
         }
     }
 

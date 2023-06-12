@@ -17,18 +17,13 @@ class Client extends net.Socket {
         this.config = config;
         this.entry = new Protocol();
         this.pipe(this.entry).pipe(this);
-        this.entry.on('packet', (packet: Message) => this.handlePacket(packet));
+        this.entry.on('message', (packet: Message) => this.handlePacket(packet));
     }
 
     public start() {
         return new Promise<void>((resolve, reject) => {
             try {
                 this.connect(this.config.port, this.config.address, async () => {
-                    // console.log('连接成功，休眠 5s 后发送注册包');
-                    // await new Promise<void>((resolve) => {
-                    //     setInterval(() => resolve(), 5000);
-                    // });
-                    console.log('开始发送注册包');
                     const regPacket = {
                         type: PacketType.REG,
                         version: 1,
@@ -37,7 +32,6 @@ class Client extends net.Socket {
                         id: this.config.id
                     };
                     this.entry.send(regPacket);
-                    console.log('已发送注册包');
                     resolve();
                 });
             } catch (e) {
@@ -78,7 +72,7 @@ class Client extends net.Socket {
     }
     // 处理聊天包
     private handleChat(packet: ChatMessage) {
-        const { world, world_display, sender, content } = packet;
+        const { world, world_display, sender, content, from_server } = packet;
         const decodedContent = content.map((c) => {
             const { type, content, ...otherProps } = c;
             return {
@@ -91,7 +85,8 @@ class Client extends net.Socket {
             world,
             world_display: Buffer.from(world_display, 'base64').toString('utf-8'),
             sender: Buffer.from(sender, 'base64').toString('utf-8'),
-            content: decodedContent
+            content: decodedContent,
+            from_server: Buffer.from(from_server || '', 'base64').toString('utf-8')
         };
         this.emit('chat', chatEvent);
     }
