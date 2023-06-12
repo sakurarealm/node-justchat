@@ -8,6 +8,7 @@ interface Config {
 }
 
 interface ServerConfig extends Config {
+    host?: string;
     port: number;
     enable?: boolean;
     singleMode?: boolean;

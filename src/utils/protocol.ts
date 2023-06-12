@@ -32,8 +32,8 @@ class JustChatProtocol extends Duplex {
                 break;
             }
 
-            const header = this._buffer.slice(0, 4);
-            if (!header.equals(Buffer.from([0x11, 0x45, 0x14, 0x00]))) {
+            const header = this._buffer.slice(0, 3);
+            if (!header.equals(Buffer.from([0x11, 0x45, 0x14]))) {
                 // 协议头不正确
                 this.emit('error', new Error('Invalid header'));
                 return;
@@ -48,7 +48,6 @@ class JustChatProtocol extends Duplex {
             const body = this._buffer.slice(7, bodyLength + 7).toString('ascii');
             // 发送message事件，传递解析后的JSON对象
             this.emit('message', JSON.parse(body));
-
             // 更新缓存区
             this._buffer = this._buffer.slice(bodyLength + 7);
         }
@@ -59,7 +58,7 @@ class JustChatProtocol extends Duplex {
         const bodyLength = Buffer.alloc(4);
         bodyLength.writeInt32BE(body.length);
 
-        const header = Buffer.from([0x11, 0x45, 0x14, 0x00]);
+        const header = Buffer.from([0x11, 0x45, 0x14]);
         const packetData = Buffer.concat([header, bodyLength, body]);
 
         // 将打包后的数据块写入缓存区

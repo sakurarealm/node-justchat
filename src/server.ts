@@ -23,7 +23,16 @@ class MyServer extends net.Server {
     }
 
     public start() {
-        this.listen(this.config.port);
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this.listen(this.config.port, () => {
+                    console.log('服务器开始监听');
+                    resolve();
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
     private handleConnection(socket: net.Socket) {
@@ -39,6 +48,7 @@ class MyServer extends net.Server {
         }
         this.connections++;
         const entry = new Protocol();
+        socket.pipe(entry).pipe(socket);
         const client: Client = {
             entry,
             socket,

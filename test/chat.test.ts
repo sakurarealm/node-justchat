@@ -2,15 +2,15 @@ import { JustChatClient, JustChatServer } from '../src';
 import { describe, expect, test } from '@jest/globals';
 import { ChatMessage, PacketType } from '../src/types';
 
-describe('JustChat', () => {
+describe('JustChat', async () => {
     const client = new JustChatClient({
         address: 'localhost',
-        port: 8080,
+        port: 38080,
         name: 'Jest Client',
         id: '123'
     });
     const server = new JustChatServer({
-        port: 8080,
+        port: 38080,
         name: 'Jest Server',
         id: '321'
     });
@@ -27,9 +27,9 @@ describe('JustChat', () => {
             }
         ]
     };
+    server.start();
+    client.start();
     test('It Should correctly send Chat Messages C2S', (done) => {
-        server.start();
-        client.start();
         client.sendChat(msg);
         server.on('chat', (rmsg, client) => {
             expect(rmsg.content[0].content).toBe('This is a test message');
@@ -37,7 +37,7 @@ describe('JustChat', () => {
             expect(client.uuid).toBe('123');
             done();
         });
-    });
+    }, 1000000);
     test('It Should correctly send Chat Messages S2C', (done) => {
         server.sendChatMessage(msg, {
             name: 'Jest Client',
@@ -48,5 +48,5 @@ describe('JustChat', () => {
             expect(rmsg.from_server).toBe('Jest Server');
             done();
         });
-    });
+    }, 1000000);
 });

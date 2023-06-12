@@ -18,21 +18,32 @@ class Client extends net.Socket {
         this.entry = new Protocol();
         this.pipe(this.entry).pipe(this);
         this.entry.on('packet', (packet: Message) => this.handlePacket(packet));
-        // 监听 connect 事件
-        this.on('connect', () => {
-            const regPacket = {
-                type: PacketType.REG,
-                version: 1,
-                identity: '1',
-                name: this.config.name,
-                id: this.config.id
-            };
-            this.entry.send(regPacket);
-        });
     }
 
     public start() {
-        this.connect(this.config.port, this.config.address);
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this.connect(this.config.port, this.config.address, async () => {
+                    // console.log('连接成功，休眠 5s 后发送注册包');
+                    // await new Promise<void>((resolve) => {
+                    //     setInterval(() => resolve(), 5000);
+                    // });
+                    console.log('开始发送注册包');
+                    const regPacket = {
+                        type: PacketType.REG,
+                        version: 1,
+                        identity: '1',
+                        name: this.config.name,
+                        id: this.config.id
+                    };
+                    this.entry.send(regPacket);
+                    console.log('已发送注册包');
+                    resolve();
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
     // 处理包
