@@ -1,6 +1,6 @@
 {
   "name": "justchat-mc",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "A node.js client and server lib for JustChat.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
