@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/CJGroup/node-justchat/compare/v1.0.1...v1.0.2) (2023-06-13)
+
+
+### Bug Fixes
+
+* 修复了Chat包和CMD包的type数搞反了的问题 ([dc4c3f0](https://github.com/CJGroup/node-justchat/commit/dc4c3f0ab8061ee43ac42a655710c6e90c8dc0e8))
+
 ## [1.0.1](https://github.com/CJGroup/node-justchat/compare/v1.0.0...v1.0.1) (2023-06-13)
 
 
