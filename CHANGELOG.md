@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/CJGroup/node-justchat/compare/v1.0.0...v1.0.1) (2023-06-13)
+
+
+### Bug Fixes
+
+* 修复了sendChat和sendList需要填写version和type字段的问题 ([5304527](https://github.com/CJGroup/node-justchat/commit/5304527b0d8525a4e5239bad3ec35b90a748e778))
+
 # 1.0.0 (2023-06-12)
 
 
