@@ -39,9 +39,27 @@ interface ChatMessage extends MessageBase {
 
 interface ListMessage extends MessageBase {
     subtype: 0 | 1;
-    count: number;
-    max: number;
-    playerlist: string[];
+    count?: number;
+    max?: number;
+    playerlist?: string[];
+    world: string;
+    world_display: string;
+    sender: string;
+}
+
+interface SendChatMessage {
+    world: string;
+    world_display: string;
+    sender: string;
+    content: Array<ChatMessageContent>;
+    from_server?: string;
+}
+
+interface SendListMessage {
+    subtype: 0 | 1;
+    count?: number;
+    max?: number;
+    playerlist?: string[];
     world: string;
     world_display: string;
     sender: string;
@@ -49,4 +67,12 @@ interface ListMessage extends MessageBase {
 
 type Message = RegisterMessage | BroadcastMessage | ChatMessage | ListMessage;
 
-export { Message, RegisterMessage, BroadcastMessage, ChatMessage, ListMessage };
+export {
+    Message,
+    RegisterMessage,
+    BroadcastMessage,
+    ChatMessage,
+    ListMessage,
+    SendChatMessage,
+    SendListMessage
+};

@@ -8,7 +8,9 @@ import {
     ListMessage,
     RegisterMessage,
     ServerConfig,
-    SimpleClient
+    SimpleClient,
+    SendListMessage,
+    SendChatMessage
 } from './types';
 import { Protocol, serverDefault } from './utils';
 
@@ -169,7 +171,7 @@ class MyServer extends net.Server {
     private handleList(packet: ListMessage, client: Client) {
         const count = packet.count;
         const max = packet.max;
-        const playerlist = packet.playerlist.map((player: string) =>
+        const playerlist = packet.playerlist?.map((player: string) =>
             Buffer.from(player, 'base64').toString('utf-8')
         );
         const world = packet.world;
@@ -193,7 +195,7 @@ class MyServer extends net.Server {
     }
 
     //可以发送ChatMessage的函数
-    public sendChatMessage(message: ChatMessage, client?: SimpleClient) {
+    public sendChatMessage(message: SendChatMessage, client?: SimpleClient) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 根据 name 或 uuid 寻找客户端
@@ -254,7 +256,7 @@ class MyServer extends net.Server {
     }
 
     //可以发送ListMessage的函数
-    public sendListMessage(message: ListMessage, client?: SimpleClient) {
+    public sendListMessage(message: SendListMessage, client?: SimpleClient) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 根据 name 或 uuid 寻找客户端

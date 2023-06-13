@@ -5,7 +5,9 @@ import {
     ClientConfig,
     ListMessage,
     PacketType,
-    Message
+    Message,
+    SendChatMessage,
+    SendListMessage
 } from './types';
 import { Protocol } from './utils';
 
@@ -104,7 +106,7 @@ class Client extends net.Socket {
     private handleList(packet: ListMessage) {
         const count = packet.count;
         const max = packet.max;
-        const playerlist = packet.playerlist.map((player: string) =>
+        const playerlist = packet.playerlist?.map((player: string) =>
             Buffer.from(player, 'base64').toString('utf-8')
         );
         const world = packet.world;
@@ -119,7 +121,7 @@ class Client extends net.Socket {
         this.emit('list', { count, max, playerlist, world, world_display, sender });
     }
     // 发送聊天包
-    public sendChat(message: ChatMessage) {
+    public sendChat(message: SendChatMessage) {
         this.entry.send({
             version: 4,
             type: PacketType.CHAT,
@@ -138,7 +140,7 @@ class Client extends net.Socket {
         });
     }
     // 发送广播包
-    public sendList(message: ListMessage) {
+    public sendList(message: SendListMessage) {
         this.entry.send({
             version: 4,
             type: PacketType.LIST,
