@@ -10,7 +10,8 @@ import {
     ServerConfig,
     SimpleClient,
     SendListMessage,
-    SendChatMessage
+    SendChatMessage,
+    PacketVersion
 } from './types';
 import { Protocol, serverDefault } from './utils';
 
@@ -68,7 +69,7 @@ class MyServer extends net.Server {
         setInterval(() => {
             const pulsePacket = {
                 type: PacketType.PULSE,
-                version: 1
+                version: PacketVersion
             };
             entry.send(pulsePacket);
         }, 30000); // 每 30 秒发送一个心跳包
@@ -203,7 +204,7 @@ class MyServer extends net.Server {
             const target = this.findClient(client);
             if (target) {
                 const sendMsg = {
-                    version: 4,
+                    version: PacketVersion,
                     type: PacketType.CHAT,
                     // 转换需要转换为 base64 的字段
                     world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
@@ -229,7 +230,7 @@ class MyServer extends net.Server {
         } else if (this.config.singleMode) {
             this.clients.forEach((target) => {
                 const sendMsg = {
-                    version: 4,
+                    version: PacketVersion,
                     type: PacketType.CHAT,
                     // 转换需要转换为 base64 的字段
                     world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
@@ -264,7 +265,7 @@ class MyServer extends net.Server {
             const target = this.findClient(client);
             if (target) {
                 const sendMsg = {
-                    version: 4,
+                    version: PacketVersion,
                     type: PacketType.LIST,
                     subtype: 0,
                     world: message.world,
@@ -279,7 +280,7 @@ class MyServer extends net.Server {
         } else if (this.config.singleMode) {
             this.clients.forEach((target) => {
                 const sendMsg = {
-                    version: 4,
+                    version: PacketVersion,
                     type: PacketType.LIST,
                     subtype: message.subtype,
                     world: message.world,

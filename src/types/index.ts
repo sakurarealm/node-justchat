@@ -16,3 +16,5 @@ export interface SimpleClient {
     name?: string;
     uuid?: string;
 }
+
+export const PacketVersion = 4;

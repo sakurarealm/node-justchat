@@ -1,6 +1,5 @@
-import { JustChatClient, JustChatServer } from '../src';
+import { JustChatClient, JustChatServer, SendChatMessage } from '../src';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { ChatMessage, PacketType } from '../src/types';
 
 describe('JustChat', () => {
     const client = new JustChatClient({
@@ -14,9 +13,7 @@ describe('JustChat', () => {
         name: 'Jest Server',
         id: '321'
     });
-    const msg: ChatMessage = {
-        version: 4,
-        type: PacketType.CHAT,
+    const msg: SendChatMessage = {
         world: '123',
         world_display: 'test',
         sender: 'Jest',

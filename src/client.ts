@@ -7,7 +7,8 @@ import {
     PacketType,
     Message,
     SendChatMessage,
-    SendListMessage
+    SendListMessage,
+    PacketVersion
 } from './types';
 import { Protocol } from './utils';
 
@@ -28,7 +29,7 @@ class Client extends net.Socket {
                 this.connect(this.config.port, this.config.address, async () => {
                     const regPacket = {
                         type: PacketType.REG,
-                        version: 1,
+                        version: PacketVersion,
                         identity: '1',
                         name: this.config.name,
                         id: this.config.id
@@ -50,7 +51,7 @@ class Client extends net.Socket {
                 // 向服务器发送心跳包
                 this.entry.send({
                     type: PacketType.PULSE,
-                    version: 4
+                    version: PacketVersion
                 });
                 break;
             case PacketType.REG:
@@ -123,7 +124,7 @@ class Client extends net.Socket {
     // 发送聊天包
     public sendChat(message: SendChatMessage) {
         this.entry.send({
-            version: 4,
+            version: PacketVersion,
             type: PacketType.CHAT,
             // 转换需要转换为 base64 的字段
             world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
@@ -142,7 +143,7 @@ class Client extends net.Socket {
     // 发送广播包
     public sendList(message: SendListMessage) {
         this.entry.send({
-            version: 4,
+            version: PacketVersion,
             type: PacketType.LIST,
             subtype: message.subtype,
             world: message.world,

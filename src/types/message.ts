@@ -3,8 +3,8 @@ import { CQMessage } from './cq';
 export enum PacketType {
     PULSE = 0,
     REG = 1,
-    CHAT = 100,
-    BROADCAST = 101,
+    BROADCAST = 100,
+    CHAT = 101,
     LIST = 200
 }
 interface MessageBase {
