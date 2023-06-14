@@ -74,5 +74,6 @@ export {
     ChatMessage,
     ListMessage,
     SendChatMessage,
-    SendListMessage
+    SendListMessage,
+    ChatMessageContent
 };

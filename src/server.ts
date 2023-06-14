@@ -140,13 +140,23 @@ class MyServer extends net.Server {
         const { world, world_display, sender, content } = packet;
         const decodedContent = content.map((c) => {
             const { type, content, ...otherProps } = c;
+            const decodedProps = Object.entries(otherProps).reduce((acc, [key, value]) => {
+                if (typeof value === 'string' && key !== 'type' && key !== 'function') {
+                    return {
+                        ...acc,
+                        [key]: Buffer.from(value, 'base64').toString('utf-8')
+                    };
+                }
+                return acc;
+            }, {});
             return {
                 type,
                 content: Buffer.from(content, 'base64').toString('utf-8'),
-                ...otherProps
+                function: c.function,
+                ...decodedProps
             };
         });
-        const chatEvent = {
+        const chatEvent: SendChatMessage = {
             world,
             world_display: Buffer.from(world_display, 'base64').toString('utf-8'),
             sender: Buffer.from(sender, 'base64').toString('utf-8'),
@@ -212,10 +222,27 @@ class MyServer extends net.Server {
                     sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
                     content: message.content.map((c) => {
                         const { type, content, ...otherProps } = c;
+                        const encodedProps = Object.entries(otherProps).reduce(
+                            (acc, [key, value]) => {
+                                if (
+                                    typeof value === 'string' &&
+                                    key !== 'type' &&
+                                    key !== 'function'
+                                ) {
+                                    return {
+                                        ...acc,
+                                        [key]: Buffer.from(value, 'utf-8').toString('base64')
+                                    };
+                                }
+                                return acc;
+                            },
+                            {}
+                        );
                         return {
                             type,
                             content: Buffer.from(content, 'utf-8').toString('base64'),
-                            ...otherProps
+                            function: c.function,
+                            ...encodedProps
                         };
                     }),
                     from_server: Buffer.from(
@@ -238,10 +265,27 @@ class MyServer extends net.Server {
                     sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
                     content: message.content.map((c) => {
                         const { type, content, ...otherProps } = c;
+                        const encodedProps = Object.entries(otherProps).reduce(
+                            (acc, [key, value]) => {
+                                if (
+                                    typeof value === 'string' &&
+                                    key !== 'type' &&
+                                    key !== 'function'
+                                ) {
+                                    return {
+                                        ...acc,
+                                        [key]: Buffer.from(value, 'utf-8').toString('base64')
+                                    };
+                                }
+                                return acc;
+                            },
+                            {}
+                        );
                         return {
                             type,
                             content: Buffer.from(content, 'utf-8').toString('base64'),
-                            ...otherProps
+                            function: c.function,
+                            ...encodedProps
                         };
                     }),
                     from_server: Buffer.from(
