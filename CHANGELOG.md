@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/CJGroup/node-justchat/compare/v1.0.2...v1.0.3) (2023-06-14)
+
+
+### Bug Fixes
+
+* 修复了若干问题 ([4ff2bd1](https://github.com/CJGroup/node-justchat/commit/4ff2bd1ccfe9e83b71830334ea8df68e26634213))
+
 ## [1.0.2](https://github.com/CJGroup/node-justchat/compare/v1.0.1...v1.0.2) (2023-06-13)
 
 
