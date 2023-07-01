@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/CJGroup/node-justchat/compare/v1.0.3...v1.1.0) (2023-07-01)
+
+
+### Features
+
+* add register event ([c601f6e](https://github.com/CJGroup/node-justchat/commit/c601f6ec66b7e3fe0b8eae712ba742541018a38f))
+
 ## [1.0.3](https://github.com/CJGroup/node-justchat/compare/v1.0.2...v1.0.3) (2023-06-14)
 
 
