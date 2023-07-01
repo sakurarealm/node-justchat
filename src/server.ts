@@ -134,6 +134,7 @@ class MyServer extends net.Server {
     private handleReg(packet: RegisterMessage, client: Client) {
         client.name = packet.name;
         client.uuid = packet.id;
+        this.emit('register', { name: client.name, uuid: client.uuid });
     }
     // 处理聊天包
     private handleChat(packet: ChatMessage, client: Client) {
