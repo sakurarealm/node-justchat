@@ -206,6 +206,15 @@ class MyServer extends net.Server {
         return this.clients.find((client) => client.name === name || client.uuid === uuid);
     }
 
+    // 获取客户端列表
+    public getClientList(): Required<SimpleClient>[] {
+        const clientList = this.clients.map((client) => {
+            const { name, uuid } = client as Required<SimpleClient>;
+            return { name, uuid };
+        });
+        return clientList;
+    }
+
     //可以发送ChatMessage的函数
     public sendChatMessage(message: SendChatMessage, client?: SimpleClient) {
         // 检测客户端是否超时
