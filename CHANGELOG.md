@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/CJGroup/node-justchat/compare/v1.1.0...v1.1.1) (2023-07-03)
+
+
+### Bug Fixes
+
+* 添加了getClientList函数 ([f2a9310](https://github.com/CJGroup/node-justchat/commit/f2a93104ba6dea2e323967c6f040d970ee9ce0d0))
+
 # [1.1.0](https://github.com/CJGroup/node-justchat/compare/v1.0.3...v1.1.0) (2023-07-01)
 
 
