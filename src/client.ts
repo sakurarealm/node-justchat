@@ -31,7 +31,9 @@ class Client extends net.Socket {
                         type: PacketType.REG,
                         version: PacketVersion,
                         identity: '1',
-                        name: this.config.name,
+                        name: this.config.name
+                            ? Buffer.from(this.config.name, 'utf-8').toString('base64')
+                            : Buffer.from('', 'utf-8').toString('base64'),
                         id: this.config.id
                     };
                     this.entry.send(regPacket);

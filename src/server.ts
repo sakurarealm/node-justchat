@@ -132,7 +132,7 @@ class MyServer extends net.Server {
     }
     // 处理注册包
     private handleReg(packet: RegisterMessage, client: Client) {
-        client.name = packet.name;
+        client.name = Buffer.from(packet.name, 'base64').toString('utf-8');
         client.uuid = packet.id;
         this.emit('register', { name: client.name, uuid: client.uuid });
     }
