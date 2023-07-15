@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/CJGroup/node-justchat/compare/v1.1.2...v1.1.3) (2023-07-15)
+
+
+### Bug Fixes
+
+* the 'world' param can be encoded ([cae0c18](https://github.com/CJGroup/node-justchat/commit/cae0c18ea305b260e105d30883d8421e164bedad))
+
 ## [1.1.2](https://github.com/CJGroup/node-justchat/compare/v1.1.1...v1.1.2) (2023-07-14)
 
 
