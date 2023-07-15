@@ -87,7 +87,7 @@ class Client extends net.Socket {
             };
         });
         const chatEvent = {
-            world,
+            world: Buffer.from(world, 'base64').toString('utf-8'),
             world_display: Buffer.from(world_display, 'base64').toString('utf-8'),
             sender: Buffer.from(sender, 'base64').toString('utf-8'),
             content: decodedContent,
