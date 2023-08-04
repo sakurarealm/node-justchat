@@ -1,6 +1,6 @@
 {
-  "name": "justchat-mc",
-  "version": "1.1.0",
+  "name": "@sakurarealm/justchat-mc",
+  "version": "1.2.0",
   "description": "A node.js client and server lib for JustChat.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,11 +19,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CJGroup/node-justchat.git"
+    "url": "https://github.com/sakurarealm/node-justchat.git"
   },
-  "homepage": "https://github.com/CJGroup/node-justchat",
+  "homepage": "https://github.com/sakurarealm/node-justchat",
   "bugs": {
-    "url": "https://github.com/CJGroup/node-justchat/issues"
+    "url": "https://github.com/sakurarealm/node-justchat/issues"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",

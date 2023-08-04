@@ -134,7 +134,12 @@ class MyServer extends net.Server {
     private handleReg(packet: RegisterMessage, client: Client) {
         client.name = Buffer.from(packet.name, 'base64').toString('utf-8');
         client.uuid = packet.id;
-        this.emit('register', { name: client.name, uuid: client.uuid });
+        client.SID = packet.SID;
+        this.emit('register', {
+            name: client.name,
+            uuid: client.uuid,
+            SID: client.SID
+        });
     }
     // 处理聊天包
     private handleChat(packet: ChatMessage, client: Client) {
@@ -209,8 +214,8 @@ class MyServer extends net.Server {
     // 获取客户端列表
     public getClientList(): Required<SimpleClient>[] {
         const clientList = this.clients.map((client) => {
-            const { name, uuid } = client as Required<SimpleClient>;
-            return { name, uuid };
+            const { name, uuid, SID } = client as Required<SimpleClient>;
+            return { name, uuid, SID };
         });
         return clientList;
     }

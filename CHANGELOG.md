@@ -1,3 +1,32 @@
+# [1.2.0](https://github.com/sakurarealm/node-justchat/compare/v1.1.3...v1.2.0) (2023-08-04)
+
+
+### Features
+
+* 适配新属性 ([4a763d8](https://github.com/sakurarealm/node-justchat/commit/4a763d80ca79884f3697ed703e2c268e5e5f69c7))
+* 配合修改isMain为SID ([9271c83](https://github.com/sakurarealm/node-justchat/commit/9271c833a289649c304a28be314b13e7cd982ca0))
+
+## [1.1.3](https://github.com/CJGroup/node-justchat/compare/v1.1.2...v1.1.3) (2023-07-15)
+
+
+### Bug Fixes
+
+* the 'world' param can be encoded ([cae0c18](https://github.com/CJGroup/node-justchat/commit/cae0c18ea305b260e105d30883d8421e164bedad))
+
+## [1.1.2](https://github.com/CJGroup/node-justchat/compare/v1.1.1...v1.1.2) (2023-07-14)
+
+
+### Bug Fixes
+
+* incorrect Reg packet format ([b91a728](https://github.com/CJGroup/node-justchat/commit/b91a728afe9749a38c91248c13e94e3223c6e81b))
+
+## [1.1.1](https://github.com/CJGroup/node-justchat/compare/v1.1.0...v1.1.1) (2023-07-03)
+
+
+### Bug Fixes
+
+* 添加了getClientList函数 ([f2a9310](https://github.com/CJGroup/node-justchat/commit/f2a93104ba6dea2e323967c6f040d970ee9ce0d0))
+
 # [1.1.0](https://github.com/CJGroup/node-justchat/compare/v1.0.3...v1.1.0) (2023-07-01)
 
 
