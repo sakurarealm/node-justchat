@@ -1,0 +1,13 @@
+src/
+.github/
+.vscode/
+test/
+.editorconfig
+.eslintrc
+.gitignore
+.prettierrc
+.releaserc
+jest.config.ts
+pnpm-lock.yml
+rollup.config.mjs
+tsconfig.json
