@@ -10,11 +10,13 @@ export interface Client {
     entry: Protocol;
     socket: net.Socket;
     lastPulseTime: number;
+    SID?: number;
 }
 
 export interface SimpleClient {
     name?: string;
     uuid?: string;
+    SID?: number;
 }
 
 export const PacketVersion = 4;
