@@ -16,7 +16,7 @@ interface RegisterMessage extends MessageBase {
     identity: 0 | 1;
     id: string;
     name: string;
-    isSakuraMain?: string;
+    SID: number;
 }
 
 interface BroadcastMessage extends MessageBase {

@@ -10,12 +10,13 @@ export interface Client {
     entry: Protocol;
     socket: net.Socket;
     lastPulseTime: number;
-    isSakuraMainWorld?: boolean;
+    SID?: number;
 }
 
 export interface SimpleClient {
     name?: string;
     uuid?: string;
+    SID?: number;
 }
 
 export const PacketVersion = 4;
