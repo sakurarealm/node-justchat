@@ -10,6 +10,7 @@ export interface Client {
     entry: Protocol;
     socket: net.Socket;
     lastPulseTime: number;
+    isSakuraMainWorld?: boolean;
 }
 
 export interface SimpleClient {

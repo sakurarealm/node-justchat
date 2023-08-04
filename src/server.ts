@@ -134,7 +134,12 @@ class MyServer extends net.Server {
     private handleReg(packet: RegisterMessage, client: Client) {
         client.name = Buffer.from(packet.name, 'base64').toString('utf-8');
         client.uuid = packet.id;
-        this.emit('register', { name: client.name, uuid: client.uuid });
+        client.isSakuraMainWorld = !!packet.isSakuraMain;
+        this.emit('register', {
+            name: client.name,
+            uuid: client.uuid,
+            isSakuraMainWorld: client.isSakuraMainWorld
+        });
     }
     // 处理聊天包
     private handleChat(packet: ChatMessage, client: Client) {
