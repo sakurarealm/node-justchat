@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/sakurarealm/node-justchat/compare/v1.1.3...v1.2.0) (2023-08-04)
+
+
+### Features
+
+* 适配新属性 ([4a763d8](https://github.com/sakurarealm/node-justchat/commit/4a763d80ca79884f3697ed703e2c268e5e5f69c7))
+* 配合修改isMain为SID ([9271c83](https://github.com/sakurarealm/node-justchat/commit/9271c833a289649c304a28be314b13e7cd982ca0))
+
 ## [1.1.3](https://github.com/CJGroup/node-justchat/compare/v1.1.2...v1.1.3) (2023-07-15)
 
 
