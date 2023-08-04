@@ -19,11 +19,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/CJGroup/node-justchat.git"
+    "url": "https://github.com/sakurarealm/node-justchat.git"
   },
-  "homepage": "https://github.com/CJGroup/node-justchat",
+  "homepage": "https://github.com/sakurarealm/node-justchat",
   "bugs": {
-    "url": "https://github.com/CJGroup/node-justchat/issues"
+    "url": "https://github.com/sakurarealm/node-justchat/issues"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",
