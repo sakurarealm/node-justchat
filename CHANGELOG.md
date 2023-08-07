@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/sakurarealm/node-justchat/compare/v1.2.0...v1.3.0) (2023-08-07)
+
+
+### Features
+
+* 修改客户端代码以适应变化 ([0236eb0](https://github.com/sakurarealm/node-justchat/commit/0236eb09fe118741e1ea2ace6bc97496c694a13c))
+* 修改服务器端代码以适应sender类型变化 ([2954f34](https://github.com/sakurarealm/node-justchat/commit/2954f349239d6b780e4f973f76fefec619f172bc))
+
 # [1.2.0](https://github.com/sakurarealm/node-justchat/compare/v1.1.3...v1.2.0) (2023-08-04)
 
 
