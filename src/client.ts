@@ -89,7 +89,11 @@ class Client extends net.Socket {
         const chatEvent = {
             world: Buffer.from(world, 'base64').toString('utf-8'),
             world_display: Buffer.from(world_display, 'base64').toString('utf-8'),
-            sender: Buffer.from(sender, 'base64').toString('utf-8'),
+            sender: {
+                name: Buffer.from(sender.name, 'base64').toString('utf-8'),
+                uuid: Buffer.from(sender.uuid, 'base64').toString('utf-8'),
+                title: Buffer.from(sender.title, 'base64').toString('utf-8')
+            },
             content: decodedContent,
             from_server: Buffer.from(from_server || '', 'base64').toString('utf-8')
         };
@@ -131,7 +135,11 @@ class Client extends net.Socket {
             // 转换需要转换为 base64 的字段
             world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
             world: message.world,
-            sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
+            sender: {
+                name: Buffer.from(message.sender.name, 'utf-8').toString('base64'),
+                uuid: Buffer.from(message.sender.uuid, 'utf-8').toString('base64'),
+                title: Buffer.from(message.sender.title, 'utf-8').toString('base64')
+            },
             content: message.content.map((c) => {
                 const { type, content, ...otherProps } = c;
                 return {
