@@ -11,7 +11,8 @@ import {
     SimpleClient,
     SendListMessage,
     SendChatMessage,
-    PacketVersion
+    PacketVersion,
+    Sender
 } from './types';
 import { Protocol, serverDefault } from './utils';
 
@@ -162,10 +163,15 @@ class MyServer extends net.Server {
                 ...decodedProps
             };
         });
+        const decodedSender: Sender = {
+            name: Buffer.from(sender.name, 'base64').toString('utf-8'),
+            uuid: Buffer.from(sender.uuid, 'base64').toString('utf-8'),
+            title: Buffer.from(sender.title, 'base64').toString('utf-8')
+        };
         const chatEvent: SendChatMessage = {
             world: Buffer.from(world, 'base64').toString('utf-8'),
             world_display: Buffer.from(world_display, 'base64').toString('utf-8'),
-            sender: Buffer.from(sender, 'base64').toString('utf-8'),
+            sender: decodedSender,
             content: decodedContent
         };
         this.emit('chat', chatEvent, { name: client.name, uuid: client.uuid });
@@ -234,7 +240,11 @@ class MyServer extends net.Server {
                     // 转换需要转换为 base64 的字段
                     world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
                     world: message.world,
-                    sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
+                    sender: {
+                        name: Buffer.from(message.sender.name, 'utf-8').toString('base64'),
+                        uuid: Buffer.from(message.sender.uuid, 'utf-8').toString('base64'),
+                        title: Buffer.from(message.sender.title, 'utf-8').toString('base64')
+                    },
                     content: message.content.map((c) => {
                         const { type, content, ...otherProps } = c;
                         const encodedProps = Object.entries(otherProps).reduce(
@@ -277,7 +287,11 @@ class MyServer extends net.Server {
                     // 转换需要转换为 base64 的字段
                     world_display: Buffer.from(message.world_display, 'utf-8').toString('base64'),
                     world: message.world,
-                    sender: Buffer.from(message.sender, 'utf-8').toString('base64'),
+                    sender: {
+                        name: Buffer.from(message.sender.name, 'utf-8').toString('base64'),
+                        uuid: Buffer.from(message.sender.uuid, 'utf-8').toString('base64'),
+                        title: Buffer.from(message.sender.title, 'utf-8').toString('base64')
+                    },
                     content: message.content.map((c) => {
                         const { type, content, ...otherProps } = c;
                         const encodedProps = Object.entries(otherProps).reduce(

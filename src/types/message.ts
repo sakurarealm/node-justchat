@@ -57,7 +57,7 @@ interface ListMessage extends MessageBase {
 interface SendChatMessage {
     world: string;
     world_display: string;
-    sender: string;
+    sender: Sender;
     content: Array<ChatMessageContent>;
     from_server?: string;
 }
@@ -69,12 +69,13 @@ interface SendListMessage {
     playerlist?: string[];
     world: string;
     world_display: string;
-    sender: Sender;
+    sender: string;
 }
 
 type Message = RegisterMessage | BroadcastMessage | ChatMessage | ListMessage;
 
 export {
+    Sender,
     Message,
     RegisterMessage,
     BroadcastMessage,
