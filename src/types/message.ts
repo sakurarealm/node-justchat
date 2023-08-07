@@ -12,6 +12,12 @@ interface MessageBase {
     type: PacketType;
 }
 
+interface Sender {
+    name: string;
+    uuid: string;
+    title: string;
+}
+
 interface RegisterMessage extends MessageBase {
     identity: 0 | 1;
     id: string;
@@ -33,7 +39,7 @@ interface ChatMessageContent extends CQMessage {
 interface ChatMessage extends MessageBase {
     world: string;
     world_display: string;
-    sender: string;
+    sender: Sender;
     content: Array<ChatMessageContent>;
     from_server?: string;
 }
@@ -63,7 +69,7 @@ interface SendListMessage {
     playerlist?: string[];
     world: string;
     world_display: string;
-    sender: string;
+    sender: Sender;
 }
 
 type Message = RegisterMessage | BroadcastMessage | ChatMessage | ListMessage;
