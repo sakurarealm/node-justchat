@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/sakurarealm/node-justchat/compare/v1.3.0...v1.3.1) (2023-08-11)
+
+
+### Bug Fixes
+
+* 修复了在socket断开连接时的行为不正常问题 ([62a329c](https://github.com/sakurarealm/node-justchat/commit/62a329cbce898a4cbc97aaac19b0d6efb726c875))
+
 # [1.3.0](https://github.com/sakurarealm/node-justchat/compare/v1.2.0...v1.3.0) (2023-08-07)
 
 
