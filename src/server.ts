@@ -23,7 +23,7 @@ class MyServer extends net.Server {
     constructor(config: ServerConfig = serverDefault) {
         super();
         this.config = Object.assign(serverDefault, config);
-        this.on('connection', this.handleConnection);
+        this.on('connection', this.onConnection);
     }
 
     public start() {
@@ -38,7 +38,7 @@ class MyServer extends net.Server {
         });
     }
 
-    private handleConnection(socket: net.Socket) {
+    private onConnection(socket: net.Socket) {
         // 检测客户端是否超时
         this.checkClientTimeout();
         // 检测客户端数量是否超过最大值
@@ -63,7 +63,7 @@ class MyServer extends net.Server {
 
         // 监听收到数据的事件
         entry.on('message', (packet: Message) => {
-            this.handlePacket(client, packet);
+            this.onPacket(client, packet);
         });
 
         // 发送心跳包
@@ -82,10 +82,11 @@ class MyServer extends net.Server {
             // 将客户端从 clients 数组中移除
             this.clients = this.clients.filter((c) => c !== client);
             this.connections--;
+            this.emit('disconnection', client);
         });
     }
     // 处理包
-    private handlePacket(client: Client, packet: Message) {
+    private onPacket(client: Client, packet: Message) {
         // 根据 packet.type 处理不同的包
         switch (packet.type) {
             case PacketType.PULSE:
@@ -93,19 +94,19 @@ class MyServer extends net.Server {
                 client.lastPulseTime = Date.now();
                 break;
             case PacketType.REG:
-                this.handleReg(packet as RegisterMessage, client);
+                this.onRegister(packet as RegisterMessage, client);
                 break;
 
             case PacketType.CHAT:
-                this.handleChat(packet as ChatMessage, client);
+                this.onChat(packet as ChatMessage, client);
                 break;
 
             case PacketType.BROADCAST:
-                this.handleBroadcast(packet as BroadcastMessage, client);
+                this.onBroadcast(packet as BroadcastMessage, client);
                 break;
 
             case PacketType.LIST:
-                this.handleList(packet as ListMessage, client);
+                this.onList(packet as ListMessage, client);
                 break;
 
             default:
@@ -132,7 +133,7 @@ class MyServer extends net.Server {
         });
     }
     // 处理注册包
-    private handleReg(packet: RegisterMessage, client: Client) {
+    private onRegister(packet: RegisterMessage, client: Client) {
         client.name = Buffer.from(packet.name, 'base64').toString('utf-8');
         client.uuid = packet.id;
         client.SID = packet.SID;
@@ -143,7 +144,7 @@ class MyServer extends net.Server {
         });
     }
     // 处理聊天包
-    private handleChat(packet: ChatMessage, client: Client) {
+    private onChat(packet: ChatMessage, client: Client) {
         const { world, world_display, sender, content } = packet;
         const decodedContent = content.map((c) => {
             const { type, content, ...otherProps } = c;
@@ -177,7 +178,7 @@ class MyServer extends net.Server {
         this.emit('chat', chatEvent, { name: client.name, uuid: client.uuid });
     }
     // 处理广播包
-    private handleBroadcast(packet: BroadcastMessage, client: Client) {
+    private onBroadcast(packet: BroadcastMessage, client: Client) {
         const content = packet.content
             ? Buffer.from(packet.content, 'base64').toString('utf-8')
             : undefined;
@@ -191,7 +192,7 @@ class MyServer extends net.Server {
         );
     }
     // 处理列表包
-    private handleList(packet: ListMessage, client: Client) {
+    private onList(packet: ListMessage, client: Client) {
         const count = packet.count;
         const max = packet.max;
         const playerlist = packet.playerlist?.map((player: string) =>
