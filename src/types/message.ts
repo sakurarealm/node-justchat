@@ -64,6 +64,9 @@ interface SendChatMessage {
 
 interface SendListMessage {
     subtype: 0 | 1;
+    count?: number;
+    max?: number;
+    playerlist?: string[];
     world: string;
     world_display: string;
     sender: string;
