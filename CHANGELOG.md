@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/sakurarealm/node-justchat/compare/v1.3.2...v1.3.3) (2023-08-13)
+
+
+### Bug Fixes
+
+* SendListMessage可以存在结果 ([dc477eb](https://github.com/sakurarealm/node-justchat/commit/dc477ebcb0b264a6903b207ae454719c6d7d9403))
+
 ## [1.3.2](https://github.com/sakurarealm/node-justchat/compare/v1.3.1...v1.3.2) (2023-08-13)
 
 
