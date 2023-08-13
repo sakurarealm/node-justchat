@@ -113,7 +113,7 @@ class Client extends net.Socket {
     private handleList(packet: ListMessage) {
         const count = packet.count;
         const max = packet.max;
-        const playerlist = packet.playerlist?.map((player: string) =>
+        const playerlist = packet.player_list?.map((player: string) =>
             Buffer.from(player, 'base64').toString('utf-8')
         );
         const world = packet.world;
