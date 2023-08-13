@@ -1,3 +1,11 @@
+## [1.3.2](https://github.com/sakurarealm/node-justchat/compare/v1.3.1...v1.3.2) (2023-08-13)
+
+
+### Bug Fixes
+
+* List包有一个字段名错误 ([1e21753](https://github.com/sakurarealm/node-justchat/commit/1e217537ea46902688a56030a7c3bd4ab6b380d7))
+* 客户端代码错误 ([5a86bae](https://github.com/sakurarealm/node-justchat/commit/5a86baedee781282db411a6bf9aa38acd026299b))
+
 ## [1.3.1](https://github.com/sakurarealm/node-justchat/compare/v1.3.0...v1.3.1) (2023-08-11)
 
 
