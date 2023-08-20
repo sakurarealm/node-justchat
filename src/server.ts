@@ -330,6 +330,14 @@ class MyServer extends net.Server {
         }
     }
 
+    public sendChatMessageBySID(message: SendChatMessage, sid: number) {
+        this.checkClientTimeout();
+        if (this.clients.findIndex((val) => val.SID === sid) === -1)
+            throw new Error('没有发现该SID的客户端');
+        for (const client of this.clients) {
+            if (client.SID === sid) this.sendChatMessage(message, client);
+        }
+    }
     //可以发送ListMessage的函数
     public sendListMessage(message: SendListMessage, client?: SimpleClient) {
         // 检测客户端是否超时
@@ -366,6 +374,15 @@ class MyServer extends net.Server {
             });
         } else {
             throw new Error('未指定目标客户端');
+        }
+    }
+
+    public sendListMessageBySID(message: SendListMessage, sid: number) {
+        this.checkClientTimeout();
+        if (this.clients.findIndex((val) => val.SID === sid) === -1)
+            throw new Error('没有发现该SID的客户端');
+        for (const client of this.clients) {
+            if (client.SID === sid) this.sendListMessage(message, client);
         }
     }
 }
