@@ -175,7 +175,7 @@ class MyServer extends net.Server {
             sender: decodedSender,
             content: decodedContent
         };
-        this.emit('chat', chatEvent, { name: client.name, uuid: client.uuid });
+        this.emit('chat', chatEvent, { name: client.name, uuid: client.uuid, SID: client.SID });
     }
     // 处理广播包
     private onBroadcast(packet: BroadcastMessage, client: Client) {
@@ -188,7 +188,7 @@ class MyServer extends net.Server {
         this.emit(
             'broadcast',
             { event: packet.event, content, sender },
-            { name: client.name, uuid: client.uuid }
+            { name: client.name, uuid: client.uuid, SID: client.SID }
         );
     }
     // 处理列表包
@@ -210,7 +210,7 @@ class MyServer extends net.Server {
         this.emit(
             'list',
             { count, max, playerlist, world, world_display, sender },
-            { name: client.name, uuid: client.uuid }
+            { name: client.name, uuid: client.uuid, SID: client.SID }
         );
     }
     // 寻找客户端的函数
