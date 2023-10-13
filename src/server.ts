@@ -38,6 +38,18 @@ class MyServer extends net.Server {
         });
     }
 
+    public stop() {
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this.close(() => {
+                    resolve();
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
     private onConnection(socket: net.Socket) {
         // 检测客户端是否超时
         this.checkClientTimeout();
