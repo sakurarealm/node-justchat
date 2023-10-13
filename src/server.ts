@@ -140,6 +140,22 @@ class MyServer extends net.Server {
             return true;
         });
     }
+
+    // 添加客户端事件监听器
+    private emitClientEvent(
+        client: SimpleClient,
+        event: 'chat' | 'list' | 'broadcast',
+        ...args: any[]
+    ) {
+        const target = this.findClient(client);
+        if (target) {
+            //@ts-expect-error 无法确定类型
+            target.emit(event, args);
+        } else {
+            throw new Error('找不到目标客户端');
+        }
+    }
+
     // 处理注册包
     private onRegister(packet: RegisterMessage, client: Client) {
         client.name = Buffer.from(packet.name, 'base64').toString('utf-8');
@@ -183,7 +199,7 @@ class MyServer extends net.Server {
             sender: decodedSender,
             content: decodedContent
         };
-        this.emit('chat', chatEvent, { name: client.name, uuid: client.uuid, SID: client.SID });
+        this.emitClientEvent(client, 'chat', chatEvent);
     }
     // 处理广播包
     private onBroadcast(packet: BroadcastMessage, client: Client) {
@@ -193,11 +209,7 @@ class MyServer extends net.Server {
         const sender = packet.sender
             ? Buffer.from(packet.sender, 'base64').toString('utf-8')
             : undefined;
-        this.emit(
-            'broadcast',
-            { event: packet.event, content, sender },
-            { name: client.name, uuid: client.uuid, SID: client.SID }
-        );
+        this.emitClientEvent(client, 'broadcast', { event: packet.event, content, sender });
     }
     // 处理列表包
     private onList(packet: ListMessage, client: Client) {
@@ -215,15 +227,33 @@ class MyServer extends net.Server {
             : null;
 
         // 触发 list 事件
-        this.emit(
-            'list',
-            { count, max, playerlist, world, world_display, sender },
-            { name: client.name, uuid: client.uuid, SID: client.SID }
-        );
+        this.emitClientEvent(client, 'list', {
+            count,
+            max,
+            playerlist,
+            world,
+            world_display,
+            sender
+        });
     }
     // 寻找客户端的函数
     private findClient({ name, uuid }: SimpleClient): Client | undefined {
         return this.clients.find((client) => client.name === name || client.uuid === uuid);
+    }
+
+    // 注册客户端事件
+    public registerClientEvent(
+        client: SimpleClient,
+        event: 'chat' | 'list' | 'broadcast',
+        listener: (...args: any[]) => void
+    ) {
+        const target = this.findClient(client);
+        if (target) {
+            //@ts-expect-error 无法确定类型
+            target.on(event, listener);
+        } else {
+            throw new Error('找不到目标客户端');
+        }
     }
 
     // 获取客户端列表
