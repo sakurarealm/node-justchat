@@ -7,7 +7,7 @@ export default defineConfig({
         format: 'commonjs',
         file: 'lib/index.js'
     },
-    external: ['node:net', 'node:stream', 'uuid'],
+    external: ['node:net', 'node:stream', 'uuid', 'node:events'],
     plugins: [
         ts({
             tsconfig: 'tsconfig.json'
