@@ -1,3 +1,15 @@
+# [1.4.0](https://github.com/sakurarealm/node-justchat/compare/v1.3.3...v1.4.0) (2023-08-20)
+
+
+### Bug Fixes
+
+* 为各个事件添加SID参数 ([9d5c7c4](https://github.com/sakurarealm/node-justchat/commit/9d5c7c4d28ec326102919393264e4d23b0d266ac))
+
+
+### Features
+
+* 新增通过SID发送Chat和List包的方法 ([051db18](https://github.com/sakurarealm/node-justchat/commit/051db18b803feb909a9886e4b8bde10b25c88043))
+
 ## [1.3.3](https://github.com/sakurarealm/node-justchat/compare/v1.3.2...v1.3.3) (2023-08-13)
 
 
