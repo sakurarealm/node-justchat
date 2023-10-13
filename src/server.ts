@@ -1,7 +1,6 @@
 import net from 'node:net';
 import {
     PacketType,
-    Client,
     Message,
     ChatMessage,
     BroadcastMessage,
@@ -12,9 +11,11 @@ import {
     SendListMessage,
     SendChatMessage,
     PacketVersion,
-    Sender
+    Sender,
+    SendBroadcastMessage
 } from './types';
 import { Protocol, serverDefault } from './utils';
+import { Client } from './clients';
 
 class MyServer extends net.Server {
     private clients: Client[] = [];
@@ -38,6 +39,18 @@ class MyServer extends net.Server {
         });
     }
 
+    public stop() {
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this.close(() => {
+                    resolve();
+                });
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
+
     private onConnection(socket: net.Socket) {
         // 检测客户端是否超时
         this.checkClientTimeout();
@@ -52,11 +65,7 @@ class MyServer extends net.Server {
         this.connections++;
         const entry = new Protocol();
         socket.pipe(entry).pipe(socket);
-        const client: Client = {
-            entry,
-            socket,
-            lastPulseTime: Date.now() // 初始化 lastPulseTime
-        };
+        const client: Client = new Client(entry, socket, Date.now());
 
         // 将客户端添加到 clients 数组中
         this.clients.push(client);
@@ -132,6 +141,22 @@ class MyServer extends net.Server {
             return true;
         });
     }
+
+    // 添加客户端事件监听器
+    private emitClient(
+        client: SimpleClient,
+        event: 'chat' | 'list' | 'broadcast',
+        msg: SendChatMessage | SendListMessage | SendBroadcastMessage
+    ) {
+        const target = this.findClient(client);
+        if (target) {
+            //@ts-expect-error 无法确定类型
+            target.emit(event, msg);
+        } else {
+            throw new Error('找不到目标客户端');
+        }
+    }
+
     // 处理注册包
     private onRegister(packet: RegisterMessage, client: Client) {
         client.name = Buffer.from(packet.name, 'base64').toString('utf-8');
@@ -175,7 +200,7 @@ class MyServer extends net.Server {
             sender: decodedSender,
             content: decodedContent
         };
-        this.emit('chat', chatEvent, { name: client.name, uuid: client.uuid, SID: client.SID });
+        this.emitClient(client, 'chat', chatEvent);
     }
     // 处理广播包
     private onBroadcast(packet: BroadcastMessage, client: Client) {
@@ -185,11 +210,7 @@ class MyServer extends net.Server {
         const sender = packet.sender
             ? Buffer.from(packet.sender, 'base64').toString('utf-8')
             : undefined;
-        this.emit(
-            'broadcast',
-            { event: packet.event, content, sender },
-            { name: client.name, uuid: client.uuid, SID: client.SID }
-        );
+        this.emitClient(client, 'broadcast', { event: packet.event, content, sender });
     }
     // 处理列表包
     private onList(packet: ListMessage, client: Client) {
@@ -201,21 +222,82 @@ class MyServer extends net.Server {
         const world = packet.world;
         const world_display = packet.world_display
             ? Buffer.from(packet.world_display, 'base64').toString('utf-8')
-            : null;
-        const sender = packet.sender
-            ? Buffer.from(packet.sender, 'base64').toString('utf-8')
-            : null;
+            : '';
+        const sender = packet.sender ? Buffer.from(packet.sender, 'base64').toString('utf-8') : '';
 
         // 触发 list 事件
-        this.emit(
-            'list',
-            { count, max, playerlist, world, world_display, sender },
-            { name: client.name, uuid: client.uuid, SID: client.SID }
-        );
+        this.emitClient(client, 'list', {
+            count,
+            max,
+            playerlist,
+            world,
+            world_display,
+            sender
+        });
     }
     // 寻找客户端的函数
     private findClient({ name, uuid }: SimpleClient): Client | undefined {
         return this.clients.find((client) => client.name === name || client.uuid === uuid);
+    }
+
+    // 注册客户端事件
+    public onClient(
+        client: SimpleClient,
+        event: 'chat',
+        listener: (msg: SendChatMessage) => void
+    ): void;
+    public onClient(
+        client: SimpleClient,
+        event: 'broadcast',
+        listener: (msg: BroadcastMessage) => void
+    ): void;
+    public onClient(
+        client: SimpleClient,
+        event: 'list',
+        listener: (msg: SendListMessage) => void
+    ): void;
+    public onClient(
+        client: SimpleClient,
+        event: 'chat' | 'list' | 'broadcast',
+        listener: (...args: any[]) => void
+    ) {
+        const target = this.findClient(client);
+        if (target) {
+            //@ts-expect-error 无法确定类型
+            target.on(event, listener);
+        } else {
+            throw new Error('找不到目标客户端');
+        }
+    }
+
+    // 单次注册客户端事件
+    public onceClient(
+        client: SimpleClient,
+        event: 'chat',
+        listener: (msg: SendChatMessage) => void
+    ): void;
+    public onceClient(
+        client: SimpleClient,
+        event: 'broadcast',
+        listener: (msg: BroadcastMessage) => void
+    ): void;
+    public onceClient(
+        client: SimpleClient,
+        event: 'list',
+        listener: (msg: SendListMessage) => void
+    ): void;
+    public onceClient(
+        client: SimpleClient,
+        event: 'chat' | 'list' | 'broadcast',
+        listener: (...args: any[]) => void
+    ) {
+        const target = this.findClient(client);
+        if (target) {
+            //@ts-expect-error 无法确定类型
+            target.once(event, listener);
+        } else {
+            throw new Error('找不到目标客户端');
+        }
     }
 
     // 获取客户端列表

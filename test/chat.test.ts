@@ -16,7 +16,11 @@ describe('JustChat', () => {
     const msg: SendChatMessage = {
         world: '123',
         world_display: 'test',
-        sender: 'Jest',
+        sender: {
+            name: 'Jest',
+            uuid: '',
+            title: ''
+        },
         content: [
             {
                 type: 'text',
@@ -37,12 +41,17 @@ describe('JustChat', () => {
     }, 5500);
     test('It Should correctly send Chat Messages C2S', (done) => {
         client.sendChat(msg);
-        server.on('chat', (rmsg, client) => {
-            expect(rmsg.content[0].content).toBe('This is a test message');
-            expect(client.name).toBe('Jest Client');
-            expect(client.uuid).toBe('123');
-            done();
-        });
+        server.onClient(
+            {
+                name: 'Jest Client',
+                uuid: '123'
+            },
+            'chat',
+            (msg) => {
+                expect(msg.content[0].content).toBe('This is a test message');
+                done();
+            }
+        );
     }, 30000);
     test('It Should correctly send Chat Messages S2C', (done) => {
         server.sendChatMessage(msg, {

@@ -72,6 +72,13 @@ interface SendListMessage {
     sender: string;
 }
 
+interface SendBroadcastMessage {
+    event?: 1 | 2 | 3;
+    content?: string;
+    sender?: string;
+    from_server?: string;
+}
+
 type Message = RegisterMessage | BroadcastMessage | ChatMessage | ListMessage;
 
 export {
@@ -83,5 +90,6 @@ export {
     ListMessage,
     SendChatMessage,
     SendListMessage,
+    SendBroadcastMessage,
     ChatMessageContent
 };
