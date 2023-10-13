@@ -1,7 +1,6 @@
 import net from 'node:net';
 import {
     PacketType,
-    Client,
     Message,
     ChatMessage,
     BroadcastMessage,
@@ -15,6 +14,7 @@ import {
     Sender
 } from './types';
 import { Protocol, serverDefault } from './utils';
+import { Client } from './clients';
 
 class MyServer extends net.Server {
     private clients: Client[] = [];
@@ -64,11 +64,7 @@ class MyServer extends net.Server {
         this.connections++;
         const entry = new Protocol();
         socket.pipe(entry).pipe(socket);
-        const client: Client = {
-            entry,
-            socket,
-            lastPulseTime: Date.now() // 初始化 lastPulseTime
-        };
+        const client: Client = new Client(entry, socket, Date.now());
 
         // 将客户端添加到 clients 数组中
         this.clients.push(client);
