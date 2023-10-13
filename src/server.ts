@@ -11,7 +11,8 @@ import {
     SendListMessage,
     SendChatMessage,
     PacketVersion,
-    Sender
+    Sender,
+    SendBroadcastMessage
 } from './types';
 import { Protocol, serverDefault } from './utils';
 import { Client } from './clients';
@@ -142,15 +143,15 @@ class MyServer extends net.Server {
     }
 
     // 添加客户端事件监听器
-    private emitClientEvent(
+    private emitClient(
         client: SimpleClient,
         event: 'chat' | 'list' | 'broadcast',
-        ...args: any[]
+        msg: SendChatMessage | SendListMessage | SendBroadcastMessage
     ) {
         const target = this.findClient(client);
         if (target) {
             //@ts-expect-error 无法确定类型
-            target.emit(event, args);
+            target.emit(event, msg);
         } else {
             throw new Error('找不到目标客户端');
         }
@@ -199,7 +200,7 @@ class MyServer extends net.Server {
             sender: decodedSender,
             content: decodedContent
         };
-        this.emitClientEvent(client, 'chat', chatEvent);
+        this.emitClient(client, 'chat', chatEvent);
     }
     // 处理广播包
     private onBroadcast(packet: BroadcastMessage, client: Client) {
@@ -209,7 +210,7 @@ class MyServer extends net.Server {
         const sender = packet.sender
             ? Buffer.from(packet.sender, 'base64').toString('utf-8')
             : undefined;
-        this.emitClientEvent(client, 'broadcast', { event: packet.event, content, sender });
+        this.emitClient(client, 'broadcast', { event: packet.event, content, sender });
     }
     // 处理列表包
     private onList(packet: ListMessage, client: Client) {
@@ -221,13 +222,11 @@ class MyServer extends net.Server {
         const world = packet.world;
         const world_display = packet.world_display
             ? Buffer.from(packet.world_display, 'base64').toString('utf-8')
-            : null;
-        const sender = packet.sender
-            ? Buffer.from(packet.sender, 'base64').toString('utf-8')
-            : null;
+            : '';
+        const sender = packet.sender ? Buffer.from(packet.sender, 'base64').toString('utf-8') : '';
 
         // 触发 list 事件
-        this.emitClientEvent(client, 'list', {
+        this.emitClient(client, 'list', {
             count,
             max,
             playerlist,
@@ -242,7 +241,22 @@ class MyServer extends net.Server {
     }
 
     // 注册客户端事件
-    public registerClientEvent(
+    public onClient(
+        client: SimpleClient,
+        event: 'chat',
+        listener: (msg: SendChatMessage) => void
+    ): void;
+    public onClient(
+        client: SimpleClient,
+        event: 'broadcast',
+        listener: (msg: BroadcastMessage) => void
+    ): void;
+    public onClient(
+        client: SimpleClient,
+        event: 'list',
+        listener: (msg: SendListMessage) => void
+    ): void;
+    public onClient(
         client: SimpleClient,
         event: 'chat' | 'list' | 'broadcast',
         listener: (...args: any[]) => void
@@ -251,6 +265,36 @@ class MyServer extends net.Server {
         if (target) {
             //@ts-expect-error 无法确定类型
             target.on(event, listener);
+        } else {
+            throw new Error('找不到目标客户端');
+        }
+    }
+
+    // 单次注册客户端事件
+    public onceClient(
+        client: SimpleClient,
+        event: 'chat',
+        listener: (msg: SendChatMessage) => void
+    ): void;
+    public onceClient(
+        client: SimpleClient,
+        event: 'broadcast',
+        listener: (msg: BroadcastMessage) => void
+    ): void;
+    public onceClient(
+        client: SimpleClient,
+        event: 'list',
+        listener: (msg: SendListMessage) => void
+    ): void;
+    public onceClient(
+        client: SimpleClient,
+        event: 'chat' | 'list' | 'broadcast',
+        listener: (...args: any[]) => void
+    ) {
+        const target = this.findClient(client);
+        if (target) {
+            //@ts-expect-error 无法确定类型
+            target.once(event, listener);
         } else {
             throw new Error('找不到目标客户端');
         }
