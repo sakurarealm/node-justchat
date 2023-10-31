@@ -1,3 +1,13 @@
+# [1.5.0](https://github.com/sakurarealm/node-justchat/compare/v1.4.0...v1.5.0) (2023-10-31)
+
+
+### Features
+
+* add stop function for server ([631846e](https://github.com/sakurarealm/node-justchat/commit/631846edbcae25db7fae904a3c11956b7fb69768))
+* add type safe event emitter and handler for Client ([7880a79](https://github.com/sakurarealm/node-justchat/commit/7880a7996aa9102431da7169e6df8cd597e427b4))
+* change events to client level ([e8a5cac](https://github.com/sakurarealm/node-justchat/commit/e8a5cac625f392b34ee53c48527949e693301897))
+* change import of server.ts into Client class ([2f88382](https://github.com/sakurarealm/node-justchat/commit/2f88382cf66219402c49c83d081ac59f4b53bf17))
+
 # [1.4.0](https://github.com/sakurarealm/node-justchat/compare/v1.3.3...v1.4.0) (2023-08-20)
 
 
