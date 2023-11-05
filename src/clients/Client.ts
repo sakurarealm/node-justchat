@@ -33,7 +33,7 @@ export default class Client extends SimpleClient {
     public once(event: 'broadcast', listener: (msg: BroadcastMessage) => void): this;
     public once(event: 'list', listener: (msg: SendListMessage) => void): this;
     public once(event: string, listener: (msg: any) => void): this {
-        return super.on(event, listener);
+        return super.once(event, listener);
     }
 
     public emit(event: 'chat', msg: SendChatMessage): any;
