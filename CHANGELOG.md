@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/sakurarealm/node-justchat/compare/v1.5.0...v1.5.1) (2023-11-05)
+
+
+### Bug Fixes
+
+* Client的once方法调用父类on方法，导致重复监听 ([d3a688d](https://github.com/sakurarealm/node-justchat/commit/d3a688d8556027ca8af54fde9238a0e7540f6dbb))
+
 # [1.5.0](https://github.com/sakurarealm/node-justchat/compare/v1.4.0...v1.5.0) (2023-10-31)
 
 
